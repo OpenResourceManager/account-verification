@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use Validator;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
@@ -43,7 +44,7 @@ class AuthController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param  array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -55,10 +56,35 @@ class AuthController extends Controller
         ]);
     }
 
+
+    /**
+     * Show a user creation page
+     *
+     * @return mixed
+     */
+    public function showNewUserForm()
+    {
+        return view('auth.new_user');
+    }
+
+    /**
+     * Post user creation data
+     *
+     * @param array $data
+     */
+    public function postNewUser(array $data)
+    {
+        $data['password'] = Str::quickRandom(8);
+        $user = $this->create($data);
+        
+        
+
+    }
+
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param  array $data
      * @return User
      */
     protected function create(array $data)
@@ -66,7 +92,26 @@ class AuthController extends Controller
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'admin' => $data['admin'],
             'password' => bcrypt($data['password']),
         ]);
+    }
+
+    /**
+     * Overriding to disable registration
+     *
+     * @return mixed
+     */
+    public function showRegistrationForm()
+    {
+        return redirect('/');
+    }
+
+    /**
+     * Overriding to disable registration
+     */
+    public function register()
+    {
+        return redirect('/');
     }
 }
