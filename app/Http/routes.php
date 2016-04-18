@@ -19,8 +19,12 @@ Route::group(['middleware' => ['web']], function () {
 
     Route::auth();
 
-    Route::get('new_user', 'AuthController@showNewUserForm');
-    Route::post('new_user', 'AuthController@postNewUser');
+    Route::group(['middleware' => ['admin']], function () {
+
+        Route::get('new_user', 'AuthController@showNewUserForm');
+        Route::post('new_user', 'AuthController@postNewUser');
+
+    });
 
     Route::get('/dashboard', 'HomeController@index');
 
