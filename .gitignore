@@ -43,6 +43,7 @@ $RECYCLE.BIN/
 .idea/sqlDataSources.xml
 .idea/dynamic.xml
 .idea/uiDesigner.xml
+/config/uud.php
 
 # Gradle:
 .idea/gradle.xml
