@@ -29,9 +29,11 @@ Route::group(['middleware' => ['web']], function () {
         Route::group(['prefix' => '{id}'], function () {
             Route::get('/', 'HomeController@getUser');
             Route::get('/del', 'HomeController@deleteUser');
+            Route::get('/trash', 'HomeController@viewTrashedUser');
+            Route::post('/trash', 'HomeController@restoreTrashedUser');
             Route::post('/save', 'HomeController@saveUser');
         });
-        
+
     });
 
     Route::get('home', ['as' => 'home', 'uses' => 'HomeController@index']);
@@ -43,4 +45,3 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('profile', ['as' => 'profile', 'uses' => 'HomeController@saveProfile']);
 
 });
-
