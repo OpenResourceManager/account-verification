@@ -46,6 +46,7 @@ $RECYCLE.BIN/
 /config/uud.php
 
 # Gradle:
+/composer.lock
 .idea/gradle.xml
 .idea/libraries
 

@@ -14,18 +14,25 @@
 Route::group(['middleware' => ['web']], function () {
 
     Route::get('/', function () {
-        return view('welcome');
+        return redirect()->route('home');
     });
 
     Route::auth();
 
     Route::group(['middleware' => ['admin']], function () {
-
-        Route::get('new_user', 'AuthController@showNewUserForm');
-        Route::post('new_user', 'AuthController@postNewUser');
-
+        Route::get('/users', 'HomeController@userIndex');
+        Route::get('/users/new', 'HomeController@showNewUserForm');
+        Route::post('/users/new', 'HomeController@postNewUser');
     });
 
-    Route::get('/dashboard', 'HomeController@index');
+    Route::get('home', ['as' => 'home', 'uses' => 'HomeController@index']);
+
+    Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'HomeController@dashboard']);
+
+    Route::get('profile', ['as' => 'profile', 'uses' => 'HomeController@profile']);
+
+    Route::post('profile', ['as' => 'profile', 'uses' => 'HomeController@saveProfile']);
 
 });
+
+

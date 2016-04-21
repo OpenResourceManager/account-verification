@@ -56,31 +56,6 @@ class AuthController extends Controller
         ]);
     }
 
-
-    /**
-     * Show a user creation page
-     *
-     * @return mixed
-     */
-    public function showNewUserForm()
-    {
-        return view('auth.new_user');
-    }
-
-    /**
-     * Post user creation data
-     *
-     * @param array $data
-     */
-    public function postNewUser(array $data)
-    {
-        $data['password'] = Str::quickRandom(8);
-        $user = $this->create($data);
-        
-        
-
-    }
-
     /**
      * Create a new user instance after a valid registration.
      *
