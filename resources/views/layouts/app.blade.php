@@ -54,6 +54,7 @@
                     <li><a href="{{ url('/home') }}"><i class="fa fa-btn fa-unlock-alt"></i>Verify</a></li>
                     @if (Auth::user()->isAdmin)
                         <li><a href="{{ url('/dashboard') }}"><i class="fa fa-btn fa-dashboard"></i>Dashboard</a></li>
+                        <li><a href="{{ url('/users') }}"><i class="fa fa-btn fa-group"></i>Users</a></li>
                     @endif
                 @endif
             </ul>
@@ -71,10 +72,6 @@
                         </a>
 
                         <ul class="dropdown-menu" role="menu">
-                            @if (Auth::user()->isAdmin)
-                                <li><a href="{{ url('/users') }}"><i class="fa fa-btn fa-group"></i>Users</a>
-                                </li>
-                            @endif
                             <li><a href="{{ url('/profile') }}"><i class="fa fa-btn fa-edit"></i>Profile</a></li>
                             <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
                         </ul>

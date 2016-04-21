@@ -153,6 +153,11 @@ class HomeController extends Controller
         return view('user_trash')->with('user', User::onlyTrashed()->findOrFail($id));
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
     public function restoreTrashedUser(Request $request, $id)
     {
         // Store the request data in a var
@@ -172,7 +177,7 @@ class HomeController extends Controller
         // Determine if the target user should be an admin
         $data['isAdmin'] = isset($data['isAdmin']) ? true : false;
         // Create the user/update the user
-        User::updateOrCreate(['email' => $data['email']], $data);
+        User::updateOrCreate(['id' => $id], $data);
         // Return with a success message
         $request->session()->flash('alert-success', 'User was restored!');
         return redirect()->route('users');
