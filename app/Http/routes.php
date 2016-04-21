@@ -20,9 +20,11 @@ Route::group(['middleware' => ['web']], function () {
     Route::auth();
 
     Route::group(['middleware' => ['admin']], function () {
-        Route::get('/users', 'HomeController@userIndex');
-        Route::get('/users/new', 'HomeController@showNewUserForm');
-        Route::post('/users/new', 'HomeController@postNewUser');
+        Route::get('users', ['as' => 'users', 'uses' => 'HomeController@userIndex']);
+        Route::get('users/{id}', 'HomeController@getUser');
+        Route::post('users/{id}', 'HomeController@saveUser');
+        Route::get('users/new', ['as' => 'newuser', 'uses' => 'HomeController@showNewUserForm']);
+        Route::post('users/new', ['as' => 'newuser', 'uses' => 'HomeController@postNewUser']);
     });
 
     Route::get('home', ['as' => 'home', 'uses' => 'HomeController@index']);

@@ -1,3 +1,23 @@
 // @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
 @import 'components/toggles';
+
+.center-div {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+.row-style {
+  background-color: #f7f7f7;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+.tile-style {
+  font-size: 112px;
+}
+.new-user-icon {
+  font-size: 128px;
+}

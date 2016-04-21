@@ -102,4 +102,22 @@ class HomeController extends Controller
 
         return redirect('new/user');
     }
+
+    /**
+     * @param Request $request
+     * @param $id
+     */
+    public function getUser(Request $request, $id)
+    {
+        return view('user')->with('user', User::findOrFail($id));
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     */
+    public function saveUser(Request $request, $id)
+    {
+
+    }
 }
