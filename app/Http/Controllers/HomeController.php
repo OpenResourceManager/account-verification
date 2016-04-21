@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -74,32 +75,28 @@ class HomeController extends Controller
     }
 
     /**
-     * Post user creation data
-     *
-     * @param array $data
+     * @param Request $request
+     * @return mixed
      */
     public function postNewUser(Request $request)
     {
-
+        // Store the request data in a var
         $data = $request->all();
-
+        // Validate the incoming info
         $validator = Validator::make($data, [
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users'
         ]);
-
-        if ($validator->fails()) {
-            return redirect('users/new')->withErrors($validator)->withInput();
-        }
-
+        // If we have errors return to the last page and show the errors
+        if ($validator->fails()) return redirect('users/new')->withErrors($validator)->withInput();
+        // Generate a random password
         $data['password'] = bcrypt(Str::quickRandom(8));
-
+        // Determine if the target user should be an admin
         $data['isAdmin'] = isset($data['isAdmin']) ? true : false;
-
+        // Create the user
         User::create($data);
-
-        $request->session()->flash('alert-success', 'User was successful added!');
-
+        // Return with a success message
+        $request->session()->flash('alert-success', 'User was created!');
         return redirect('new/user');
     }
 
@@ -115,9 +112,34 @@ class HomeController extends Controller
     /**
      * @param Request $request
      * @param $id
+     * @return mixed
      */
     public function saveUser(Request $request, $id)
     {
-
+        // Store the request data in a var
+        $data = $request->all();
+        // Find the target user
+        $user = User::findOrFail($id);
+        // Validator rules
+        $rules = ['name' => 'required|max:255'];
+        // If the new email does not match the old email validate it
+        if ($user->email != $data['email']) $rules['email'] = 'required|email|max:255|unique:users';
+        // Validate the incoming info
+        $validator = Validator::make($data, $rules);
+        // If we have errors return to the last page and show the errors
+        if ($validator->fails()) return redirect('users/' . $id)->withErrors($validator)->withInput();
+        // Set their name
+        $user->name = $data['name'];
+        // Set their email
+        $user->email = $data['email'];
+        // Only an admin can change someones admin status... don't allow someone to change their own admin status either
+        if (Auth::user()->isAdmin && Auth::user()->id != $id) {
+            isset($data['isAdmin']) ? $user->isAdmin = true : $user->isAdmin = false;
+        }
+        // Save the user
+        $user->save();
+        // Return with a success message
+        $request->session()->flash('alert-success', 'User was saved!');
+        return redirect('users/' . $id);
     }
 }

@@ -13,7 +13,8 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700" rel='stylesheet' type='text/css'>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link href="{{ elixir('css/app.css') }}" rel="stylesheet">
 
     <style>
@@ -49,9 +50,11 @@
         <div class="collapse navbar-collapse" id="app-navbar-collapse">
             <!-- Left Side Of Navbar -->
             <ul class="nav navbar-nav">
-                <li><a href="{{ url('/home') }}"><i class="fa fa-btn fa-unlock-alt"></i>Verify</a></li>
-                @if (Auth::user()->isAdmin)
-                    <li><a href="{{ url('/dashboard') }}"><i class="fa fa-btn fa-dashboard"></i>Dashboard</a></li>
+                @if (!Auth::guest())
+                    <li><a href="{{ url('/home') }}"><i class="fa fa-btn fa-unlock-alt"></i>Verify</a></li>
+                    @if (Auth::user()->isAdmin)
+                        <li><a href="{{ url('/dashboard') }}"><i class="fa fa-btn fa-dashboard"></i>Dashboard</a></li>
+                    @endif
                 @endif
             </ul>
 
@@ -63,14 +66,13 @@
                 @else
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                      <span><img src="{{ Gravatar::src(Auth::user()->email, 64)}}" width="26" > </span> &nbsp; {{ Auth::user()->name }} <span class="caret"></span>
+                            <span><img src="{{ Gravatar::src(Auth::user()->email, 64)}}" width="26"> </span>
+                            &nbsp; {{ Auth::user()->name }} <span class="caret"></span>
                         </a>
 
                         <ul class="dropdown-menu" role="menu">
                             @if (Auth::user()->isAdmin)
                                 <li><a href="{{ url('/users') }}"><i class="fa fa-btn fa-group"></i>Users</a>
-                                </li>
-                                <li><a href="{{ url('/users/new') }}"><i class="fa fa-btn fa-user-plus"></i>New User</a>
                                 </li>
                             @endif
                             <li><a href="{{ url('/profile') }}"><i class="fa fa-btn fa-edit"></i>Profile</a></li>
@@ -86,7 +88,9 @@
 <div class="flash-message">
     @foreach (['danger', 'warning', 'success', 'info'] as $msg)
         @if(Session::has('alert-' . $msg))
-            <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></p>
+            <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#" class="close"
+                                                                                     data-dismiss="alert"
+                                                                                     aria-label="close">&times;</a></p>
         @endif
     @endforeach
 </div>
@@ -94,8 +98,10 @@
 @yield('content')
 
         <!-- JavaScripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
 {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
 </body>
 </html>

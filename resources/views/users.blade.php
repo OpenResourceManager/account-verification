@@ -13,7 +13,7 @@
         echo '
         <div class="center-div row-style col-md-2">
         <h4>' . $fuser->name . '</h4>
-        <img src=" ' . Gravatar::src($fuser->email, 128) . ' ">
+        <img src=" ' . Gravatar::src($fuser->email, 512) . ' " width="96">
         </div>
         </a> ';
     }
@@ -35,7 +35,7 @@
     ?>
     <div class="container">
         <div class="row">
-            <div class="col-lg-10 col-md-10 col-md-offset-2">
+            <div class="col-lg-10 col-md-12 col-lg-offset-1 col-md-offset-1">
                 <div class="panel panel-default">
                     <div class="panel-heading"><i class="fa fa-btn fa-group"></i> Users</div>
                     <div class="panel-body">
