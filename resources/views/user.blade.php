@@ -17,7 +17,8 @@
                     <div class="panel-heading"><img src="{{ Gravatar::src($user->email, 64)}}" width="26">
                         &nbsp; {{$user->name}}</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" role="form" method="POST" action="{{ url('/users/'.$user->id) }}">
+                        <form class="form-horizontal" role="form" method="POST"
+                              action="{{ url('/users/'.$user->id . '/save') }}">
                             {!! csrf_field() !!}
 
                             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
@@ -68,6 +69,10 @@
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fa fa-btn fa-floppy-o"></i>Save
                                     </button>
+                                    @if(Auth::user()->isAdmin)
+                                        <a class="btn btn-danger" href="{{ url('/users/'.$user->id.'/del') }}"><i
+                                                    class="fa fa-btn fa-trash"></i>Trash User</a>
+                                    @endif
                                 </div>
                             </div>
                         </form>

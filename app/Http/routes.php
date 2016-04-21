@@ -19,12 +19,19 @@ Route::group(['middleware' => ['web']], function () {
 
     Route::auth();
 
-    Route::group(['middleware' => ['admin']], function () {
-        Route::get('users', ['as' => 'users', 'uses' => 'HomeController@userIndex']);
-        Route::get('users/{id}', 'HomeController@getUser');
-        Route::post('users/{id}', 'HomeController@saveUser');
-        Route::get('users/new', ['as' => 'newuser', 'uses' => 'HomeController@showNewUserForm']);
-        Route::post('users/new', ['as' => 'newuser', 'uses' => 'HomeController@postNewUser']);
+    Route::group(['middleware' => ['admin'], 'prefix' => 'users'], function () {
+
+        Route::get('/', ['as' => 'users', 'uses' => 'HomeController@userIndex']);
+
+        Route::get('/new', ['as' => 'newuser', 'uses' => 'HomeController@showNewUserForm']);
+        Route::post('/new', ['as' => 'newuser', 'uses' => 'HomeController@postNewUser']);
+
+        Route::group(['prefix' => '{id}'], function () {
+            Route::get('/', 'HomeController@getUser');
+            Route::get('/del', 'HomeController@deleteUser');
+            Route::post('/save', 'HomeController@saveUser');
+        });
+        
     });
 
     Route::get('home', ['as' => 'home', 'uses' => 'HomeController@index']);
@@ -36,5 +43,4 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('profile', ['as' => 'profile', 'uses' => 'HomeController@saveProfile']);
 
 });
-
 

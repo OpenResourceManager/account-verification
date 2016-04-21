@@ -76,28 +76,62 @@ class HomeController extends Controller
 
     /**
      * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function deleteUser(Request $request, $id)
+    {
+        // Don't allow a user to delete themselves
+        if (intval(Auth::user()->id) === intval($id)) {
+            $request->session()->flash('alert-danger', 'You cannot delete your own account!');
+            return redirect()->route('newuser');
+        }
+        // Make sure that the current user is an admin
+        if (Auth::user()->isAdmin) {
+            User::findOrFail($id)->delete();
+            $request->session()->flash('alert-success', 'User was deleted!');
+        } else {
+            $request->session()->flash('alert-danger', 'You do not have permissions to do that!');
+        }
+        // Return back to the users page
+        return redirect()->route('users');
+    }
+
+    /**
+     * @param Request $request
      * @return mixed
      */
     public function postNewUser(Request $request)
     {
         // Store the request data in a var
         $data = $request->all();
+        // Get the user
+        $user = User::withTrashed()->where('email', $data['email'])->first();
+        // Validator rules
+        $rules = ['name' => 'required|max:255'];
+        // If the user does not exists add validator rules for email
+        if (!$user) {
+            $rules['email'] = 'required|email|max:255|unique:users';
+        } else {
+            // If the new email does not match the old email validate it
+            if ($user->email != $data['email']) $rules['email'] = 'required|email|max:255|unique:users';
+        }
         // Validate the incoming info
-        $validator = Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users'
-        ]);
+        $validator = Validator::make($data, $rules);
         // If we have errors return to the last page and show the errors
         if ($validator->fails()) return redirect('users/new')->withErrors($validator)->withInput();
         // Generate a random password
         $data['password'] = bcrypt(Str::quickRandom(8));
         // Determine if the target user should be an admin
         $data['isAdmin'] = isset($data['isAdmin']) ? true : false;
-        // Create the user
-        User::create($data);
+        // Check to see if the user is trashed and if so, restore the user
+        $user = User::onlyTrashed()->where('email', $data['email'])->first();
+        if ($user) $user->restore();
+        // Create the user/update the user
+        User::updateOrCreate(['email' => $data['email']], $data);
         // Return with a success message
         $request->session()->flash('alert-success', 'User was created!');
-        return redirect('new/user');
+        return redirect()->route('users');
     }
 
     /**

@@ -7,7 +7,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading"><i class="fa fa-btn fa-user-plus"></i> New User</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" role="form" method="POST" action="{{ url('/new/user') }}">
+                        <form class="form-horizontal" role="form" method="POST" action="{{ url('/users/new') }}">
                             {!! csrf_field() !!}
 
                             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
