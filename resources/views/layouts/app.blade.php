@@ -51,7 +51,7 @@
             <!-- Left Side Of Navbar -->
             <ul class="nav navbar-nav">
                 @if (!Auth::guest())
-                    <li><a href="{{ url('/home') }}"><i class="fa fa-btn fa-unlock-alt"></i>Verify</a></li>
+                    <li><a href="{{ url('/') }}"><i class="fa fa-btn fa-unlock-alt"></i>Verify</a></li>
                     @if (Auth::user()->isAdmin)
                         <li><a href="{{ url('/dashboard') }}"><i class="fa fa-btn fa-dashboard"></i>Dashboard</a></li>
                         <li><a href="{{ url('/users') }}"><i class="fa fa-btn fa-group"></i>Users</a></li>

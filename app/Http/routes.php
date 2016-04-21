@@ -36,7 +36,9 @@ Route::group(['middleware' => ['web']], function () {
 
     });
 
-    Route::get('home', ['as' => 'home', 'uses' => 'HomeController@index']);
+    Route::group(['prefix' => 'verifier'], function () {
+        Route::get('/', ['as' => 'home', 'uses' => 'VerificationController@index']);
+    });
 
     Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'HomeController@dashboard']);
 
