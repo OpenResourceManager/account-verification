@@ -6,8 +6,11 @@ use App\Http\Requests;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 
 class HomeController extends Controller
 {
@@ -128,7 +131,17 @@ class HomeController extends Controller
         $user = User::onlyTrashed()->where('email', $data['email'])->first();
         if ($user) $user->restore();
         // Create the user/update the user
-        User::updateOrCreate(['email' => $data['email']], $data);
+        $user = User::updateOrCreate(['email' => $data['email']], $data);
+        // Get token repo
+        $tokens = Password::getRepository();
+        // Generate a token for the user
+        $token = $tokens->create($user);
+        // Send a welcome email
+        Mail::send('auth.emails.welcome', ['user' => $user, 'token' => $token], function ($m) use ($user) {
+            $m->from('no-reply@sage.edu', 'User Verification');
+            $m->to($user->email, $user->name)->subject('Welcome!');
+        });
+
         // Return with a success message
         $request->session()->flash('alert-success', 'User was created!');
         return redirect()->route('users');
@@ -171,13 +184,24 @@ class HomeController extends Controller
         // Validate the incoming info
         $validator = Validator::make($data, $rules);
         // If we have errors return to the last page and show the errors
-        if ($validator->fails()) return redirect('users/' . $id.'/trash')->withErrors($validator)->withInput();
+        if ($validator->fails()) return redirect('users/' . $id . '/trash')->withErrors($validator)->withInput();
         // Restore the user
         $user->restore();
         // Determine if the target user should be an admin
         $data['isAdmin'] = isset($data['isAdmin']) ? true : false;
+        // Generate a random password
+        $data['password'] = bcrypt(Str::quickRandom(8));
         // Create the user/update the user
-        User::updateOrCreate(['id' => $id], $data);
+        $user = User::updateOrCreate(['id' => $id], $data);
+        // Get token repo
+        $tokens = Password::getRepository();
+        // Generate a token for the user
+        $token = $tokens->create($user);
+        // Send a recovery notice
+        Mail::send('auth.emails.recovery', ['user' => $user, 'token' => $token], function ($m) use ($user) {
+            $m->from('no-reply@sage.edu', 'User Verification');
+            $m->to($user->email, $user->name)->subject('Account Recovery');
+        });
         // Return with a success message
         $request->session()->flash('alert-success', 'User was restored!');
         return redirect()->route('users');

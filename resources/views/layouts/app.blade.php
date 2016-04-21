@@ -43,7 +43,7 @@
 
             <!-- Branding Image -->
             <a class="navbar-brand" href="{{ url('/') }}">
-                <i class="fa fa-btn fa-group"></i>User Verification
+                <i class="fa fa-btn fa-check-circle"></i>User Verification
             </a>
         </div>
 
