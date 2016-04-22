@@ -1,17 +1,75 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-10 col-md-offset-1">
-            <div class="panel panel-default">
-                <div class="panel-heading">Main</div>
+<?php
+//dd($errors);
+?>
 
-                <div class="panel-body">
-                    You are logged in!
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><i class="fa fa-btn fa-unlock-alt"></i> Verification</div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" role="form" method="POST" action="{{ url('/verify') }}">
+                            {!! csrf_field() !!}
+
+                            <div class="form-group{{ $errors->has('username') ? ' has-error' : '' }}">
+                                <label class="col-md-4 control-label">Username</label>
+
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" name="username"
+                                           value="{{ old('username') }}" placeholder="skywal">
+
+                                    @if ($errors->has('username'))
+                                        <span class="help-block">
+                                        <strong>{{ $errors->first('username') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="form-group{{ $errors->has('ssn') ? ' has-error' : '' }}">
+                                <label class="col-md-4 control-label">Social Security Number</label>
+
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" name="ssn"
+                                           value="{{ old('ssn') }}" placeholder="1234 (last four digits)">
+
+                                    @if ($errors->has('ssn'))
+                                        <span class="help-block">
+                                        <strong>{{ $errors->first('ssn') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="form-group{{ $errors->has('dob') ? ' has-error' : '' }}">
+                                <label class="col-md-4 control-label">Date of Birth</label>
+
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" name="dob"
+                                           value="{{ old('dob') }}" placeholder="1970-01-29">
+
+                                    @if ($errors->has('dob'))
+                                        <span class="help-block">
+                                        <strong>{{ $errors->first('dob') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-6 col-md-offset-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-btn fa-unlock"></i>Verify
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

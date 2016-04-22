@@ -33,9 +33,51 @@ class HomeController extends Controller
         return view('profile');
     }
 
-    public function saveProfile()
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function saveProfile(Request $request)
     {
+        // Get current user
+        $user = Auth::user();
+        // Store the request data in a var
+        $data = $request->all();
+        // Validator rules
+        $rules = ['name' => 'required|max:255'];
+        // If the new email does not match the old email validate it
+        if ($user->email != $data['email']) $rules['email'] = 'required|email|max:255|unique:users';
+        // Validate the incoming info
+        $validator = Validator::make($data, $rules);
+        // If we have errors return to the last page and show the errors
+        if ($validator->fails()) return redirect()->route('profile')->withErrors($validator)->withInput();
+        // Set their name
+        $user->name = $data['name'];
+        // Set their email
+        $user->email = $data['email'];
+        $user->save();
+        // Return with a success message
+        $request->session()->flash('alert-success', 'Your profile has been updated.');
+        return redirect()->route('profile');
+    }
 
+    /**
+     * @return mixed
+     */
+    public function changePassword()
+    {
+        // Get current user
+        $user = Auth::user();
+        // Get token repo
+        $tokens = Password::getRepository();
+        // Generate a token for the user
+        $token = $tokens->create($user);
+        // Send a recovery notice
+        Mail::send('auth.emails.password_change', ['user' => $user, 'token' => $token], function ($m) use ($user) {
+            $m->from('no-reply@sage.edu', 'User Verification');
+            $m->to($user->email, $user->name)->subject('Password Change');
+        });
+        return redirect('/logout');
     }
 
     /**
@@ -111,7 +153,7 @@ class HomeController extends Controller
         // Validate the incoming info
         $validator = Validator::make($data, $rules);
         // If we have errors return to the last page and show the errors
-        if ($validator->fails()) return redirect('users/new')->withErrors($validator)->withInput();
+        if ($validator->fails()) return redirect()->route('newuser')->withErrors($validator)->withInput();
         // Generate a random password
         $data['password'] = bcrypt(Str::quickRandom(8));
         // Determine if the target user should be an admin

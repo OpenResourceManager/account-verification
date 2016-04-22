@@ -17,7 +17,15 @@ class VerificationRequest extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'target_identifier'
+        'user_id',
+        'verified',
+        'request_username',
+        'request_ssn',
+        'request_dob',
+        'returned_username',
+        'returned_ssn',
+        'returned_dob',
+        'returned_user_id'
     ];
 
     /**
@@ -25,7 +33,7 @@ class VerificationRequest extends Model
      */
     public function user()
     {
-        return $this->hasOne('\App\User');
+        return $this->belongsTo('\App\User');
     }
 
 }

@@ -54,9 +54,9 @@
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fa fa-btn fa-floppy-o"></i>Save
                                     </button>
-                                    <button type="submit" class="btn btn-danger">
+                                    <a class="btn btn-danger" href="{{ url('/passwd/change') }}">
                                         <i class="fa fa-btn fa-lock"></i>Change Password
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </form>

@@ -1,27 +1,115 @@
-# Laravel PHP Framework
+# UUD User Verification App
 
-[![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)
-[![Total Downloads](https://poser.pugx.org/laravel/framework/d/total.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/framework/v/stable.svg)](https://packagist.org/packages/laravel/framework)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/framework/v/unstable.svg)](https://packagist.org/packages/laravel/framework)
-[![License](https://poser.pugx.org/laravel/framework/license.svg)](https://packagist.org/packages/laravel/framework)
+## Installation:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, queueing, and caching.
+### Debian
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+* Install Nginx:
 
-## Official Documentation
+```shell
+curl -sL https://raw.githubusercontent.com/MelonSmasher/NginxInstaller/master/nginx-latest-install.sh | bash -
+```
 
-Documentation for the framework can be found on the [Laravel website](http://laravel.com/docs).
+* Install MariaDB/MySLQ:
 
-## Contributing
+```shell
+# Install prerequisite
+apt-get install python-software-properties -y;
+# Get apt key for new repo
+apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db;
+# Add the MariaDB repo to our lists
+echo 'deb http://mirrors.syringanetworks.net/mariadb/repo/10.1/debian jessie main' > /etc/apt/sources.list.d/mariadb.list;
+# Refresh your apt cache
+apt-get update;
+# Download MariaDB and install
+apt-get install mariadb-client mariadb-server -y;
+# Secure mariadb
+mysql_secure_installation;
+```
+* Install PHP & PHP-FPM:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](http://laravel.com/docs/contributions).
+ ```shell
+ apt-get update && apt-get upgrade -y;
+ apt-get install php5-cli php5 php5-fpm php5-mysql php5-mcrypt -y;
+ ```
 
-## Security Vulnerabilities
+* Install PHP Composer:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+ ```shell
+ curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+ ```
 
-## License
+* Configure Nginx & PHP-FPM:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+ ```shell
+ vi /etc/nginx/nginx.conf
+ ```
+
+ Change:
+
+ ```shell
+ #user  nobody;
+ ```
+
+ to:
+
+ ```shell
+ user  nginx;
+ ```
+
+ Find the document root section:
+
+ ```shell
+ location / {
+    root   html;
+    index  index.html index.htm;
+ }
+ ```
+
+ Make it look like this:
+
+ ```shell
+ location / {
+    root   /usr/share/nginx/html;
+    index  index.php index.html index.htm;
+ }
+ ```
+
+
+ Find this PHP section:
+
+ ```shell
+ #location ~ \.php$ {
+ #    root           html;
+ #    fastcgi_pass   127.0.0.1:9000;
+ #    fastcgi_index  index.php;
+ #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+ #    include        fastcgi_params;
+ #}
+ ```
+
+ Make it look like this:
+
+ ```shell
+ location ~ \.php$ {
+    include             fastcgi_params;
+    fastcgi_param       SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param       PATH_INFO $fastcgi_path_info;
+    fastcgi_pass        unix:/var/run/php5-fpm.sock;
+ }
+ ```
+
+ ### Configure PHP:
+
+ In the php.ini file change `;cgi.fix_pathinfo=1` to `cgi.fix_pathinfo=o`.
+
+ ```shell
+ sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php5/fpm/php.ini
+ ```
+
+ Change the user and group that php5-fpm runs as from `www-data` to `nginx`:
+
+ ```shell
+ sed -i 's/www-data/nginx/g' /etc/php5/fpm/pool.d/www.conf
+ ```
+

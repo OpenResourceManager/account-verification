@@ -1,6 +1,7 @@
 // @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
 @import 'components/toggles';
+@import 'components/timeline';
 
 .center-div {
   text-align: center;
@@ -20,4 +21,8 @@
 }
 .new-user-icon {
   font-size: 96px;
+}
+
+.big-icon {
+  font-size: 128px;
 }

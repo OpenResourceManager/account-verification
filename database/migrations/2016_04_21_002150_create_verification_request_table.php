@@ -15,7 +15,14 @@ class CreateVerificationRequestTable extends Migration
         Schema::create('verification_requests', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
-            $table->string('target_identifier');
+            $table->boolean('verified');
+            $table->string('request_username');
+            $table->string('request_ssn');
+            $table->string('request_dob');
+            $table->string('returned_username')->nullable();
+            $table->string('returned_ssn')->nullable();
+            $table->string('returned_dob')->nullable();
+            $table->unsignedInteger('returned_user_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

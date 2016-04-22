@@ -17,6 +17,10 @@ Route::group(['middleware' => ['web']], function () {
         return redirect()->route('home');
     });
 
+    Route::get('/home', function () {
+        return redirect()->route('home');
+    });
+
     Route::auth();
 
     Route::group(['middleware' => ['admin'], 'prefix' => 'users'], function () {
@@ -36,8 +40,11 @@ Route::group(['middleware' => ['web']], function () {
 
     });
 
-    Route::group(['prefix' => 'verifier'], function () {
+    Route::group(['prefix' => 'verify'], function () {
         Route::get('/', ['as' => 'home', 'uses' => 'VerificationController@index']);
+        Route::post('/', ['as' => 'home', 'uses' => 'VerificationController@verify']);
+        Route::get('/failure', ['as' => 'verify_fail', 'uses' => 'VerificationController@verifyFail']);
+        Route::get('/success', ['as' => 'verify_success', 'uses' => 'VerificationController@verifySuccess']);
     });
 
     Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'HomeController@dashboard']);
@@ -45,5 +52,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('profile', ['as' => 'profile', 'uses' => 'HomeController@profile']);
 
     Route::post('profile', ['as' => 'profile', 'uses' => 'HomeController@saveProfile']);
+
+    Route::get('passwd/change', ['as' => 'change_passwd', 'uses' => 'HomeController@changePassword']);
 
 });
