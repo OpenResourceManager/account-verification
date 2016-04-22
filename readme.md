@@ -125,9 +125,9 @@ mysql -u root -p;
 ```
 
 ```mysql
-CREATE DATABASE 'user_verification';
+CREATE DATABASE `user_verification`;
 CREATE USER 'uv_user'@'localhost' IDENTIFIED BY 'STRONG-PASSWORD';
-GRANT ALL ON 'user_verification'.* TO 'uv_user'@'localhost';
+GRANT ALL ON `user_verification`.* TO 'uv_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 * Do the following as the Nginx user:
@@ -147,7 +147,12 @@ cd uv;
 
 ```shell
 composer install --no-dev --no-scripts --prefer-dist;
+composer dump-autoload -o
+mkdir -p bootstrap/cache
+cp .env.example .env
 php artisan key:generate
+mkdir -p storage/framework/views
+chmod -R 755 storage
 ```
 
 * Configure your `.env` file:

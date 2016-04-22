@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class VerificationRequest extends Model
+class LDAPPasswordReset extends Model
 {
     use SoftDeletes;
 
@@ -18,14 +18,7 @@ class VerificationRequest extends Model
      */
     protected $fillable = [
         'user_id',
-        'verified',
-        'request_username',
-        'request_ssn',
-        'request_dob',
-        'returned_username',
-        'returned_ssn',
-        'returned_dob',
-        'returned_user_id'
+        'username'
     ];
 
     /**
@@ -35,5 +28,4 @@ class VerificationRequest extends Model
     {
         return $this->belongsTo('\App\User');
     }
-
 }
