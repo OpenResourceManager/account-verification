@@ -2,7 +2,9 @@
 
 ## Installation:
 
-### Debian
+### Nginx/MariaDB/PHP Stack
+
+If you already have a LAMP setup or some other similar stack it should work on anything that Laravel will run on.
 
 * Install Nginx:
 
@@ -113,3 +115,67 @@ mysql_secure_installation;
  sed -i 's/www-data/nginx/g' /etc/php5/fpm/pool.d/www.conf
  ```
 
+
+### Application Install
+
+* Provision MySQL
+
+```shell
+mysql -u root -p;
+```
+
+```mysql
+CREATE DATABASE 'user_verification';
+CREATE USER 'uv_user'@'localhost' IDENTIFIED BY 'STRONG-PASSWORD';
+GRANT ALL ON 'user_verification'.* TO 'uv_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+* Do the following as the Nginx user:
+
+```shell
+su nginx;
+bash;
+```
+
+```shell
+cd /usr/share/nginx/html;
+git clone --recursive https://gitlab.sage.edu/UniversalUserData/UserVerificationClient.git uv;
+cd uv;
+```
+
+* Install Framework and Dependencies:
+
+```shell
+composer install --no-dev --no-scripts --prefer-dist;
+php artisan key:generate
+```
+
+* Configure your `.env` file:
+
+```shell
+vi .env;
+# Fill out the MySQL settings and Mail settings
+# Set your environtment to production
+```
+
+* Configure the UUD Client:
+
+```shell
+cp config/uud.example.php config/uud.php;
+vi config/uud.php;
+# Fill out the api server and this application's api key.
+```
+
+* Migrate and seed the database:
+
+```shell
+php artisan migrate --force --seed;
+```
+
+* This creates a default admin account:
+
+email: admin@doamin.tld
+
+password: Cascade
+
+You'll want to change both the email first and the password second from the profile page.
