@@ -1,5 +1,4 @@
 // @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
-
 @import 'components/toggles';
 @import 'components/timeline';
 
@@ -8,6 +7,7 @@
   margin-left: auto;
   margin-right: auto;
 }
+
 .row-style {
   background-color: #f7f7f7;
   padding: 6px;
@@ -16,13 +16,23 @@
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
 }
+
 .tile-style {
   font-size: 85px;
 }
+
 .new-user-icon {
   font-size: 96px;
 }
 
 .big-icon {
   font-size: 128px;
+}
+
+.padded_timeline {
+  padding-top: 10px;
+}
+
+.inner_padding_right {
+  padding-right: 50px;
 }

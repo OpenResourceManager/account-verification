@@ -1,3 +1,12 @@
+<?php
+$target = session('target');
+
+if (!isset($target) || !$target || empty($target)) {
+    header("Location: /");
+    exit();
+}
+?>
+
 @extends('layouts.app')
 
 @section('content')
@@ -8,7 +17,8 @@
                     <div class="panel-heading"><i class="fa fa-btn fa-times-circle"></i> Verification Failure</div>
                     <div class="panel-body">
                         <div class="center-div">
-                            <span class="big-icon"><i class="fa fa-times-circle"></i></span>
+                            <h2>{{$target['username']}} failed to pass verification!</h2>
+                            <span class="big-icon"><i class="fa fa-times-circle text-danger"></i></span>
                         </div>
                     </div>
                 </div>

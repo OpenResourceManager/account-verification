@@ -1,3 +1,13 @@
+<?php
+
+$target = session('target');
+
+if (!isset($target) || !$target || empty($target)) {
+    header("Location: /");
+    exit();
+}
+?>
+
 @extends('layouts.app')
 
 @section('content')
@@ -8,7 +18,8 @@
                     <div class="panel-heading"><i class="fa fa-btn fa-check-circle"></i> Verification Success</div>
                     <div class="panel-body">
                         <div class="center-div">
-                            <span class="big-icon"><i class="fa fa-check-circle"></i></span>
+                            <h2>{{$target['name_first'] . ' ' . $target['name_last']}} is verified!</h2>
+                            <span class="big-icon"><i class="fa fa-check-circle text-success"></i></span>
                         </div>
                     </div>
                 </div>

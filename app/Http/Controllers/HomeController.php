@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests;
+use App\Preference;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,7 +65,7 @@ class HomeController extends Controller
     /**
      * @return mixed
      */
-    public function changePassword()
+    public function changePassword(Request $request)
     {
         // Get current user
         $user = Auth::user();
@@ -77,7 +78,10 @@ class HomeController extends Controller
             $m->from('no-reply@sage.edu', 'User Verification');
             $m->to($user->email, $user->name)->subject('Password Change');
         });
-        return redirect('/logout');
+        // Return with a status message
+        $request->session()->flash('alert-warning', 'We\'ve sent you an email that contains a password reset link.' . "\n"
+            . 'Keep an eye out for the email, it may be in spam.');
+        return redirect()->route('profile');
     }
 
     /**
@@ -88,6 +92,16 @@ class HomeController extends Controller
     public function dashboard()
     {
         return view('dash');
+    }
+
+    /**
+     * Show dashboard page
+     *
+     * @return mixed
+     */
+    public function timeline()
+    {
+        return view('timeline');
     }
 
     /**
@@ -270,5 +284,64 @@ class HomeController extends Controller
         // Return with a success message
         $request->session()->flash('alert-success', 'User was saved!');
         return redirect('users/' . $id);
+    }
+
+    public function getPreferences(Request $request)
+    {
+        return view('preferences');
+    }
+
+    public function savePreferences(Request $request)
+    {
+        // Store the request data in a var
+        $data = $request->all();
+        // Validator rules
+        $rules = [
+            'application_name' => 'required|max:255',
+            'application_email_address' => 'required|email|max:255',
+        ];
+        $managing_ldap = false;
+        // If any of the ldap settings are filled out, require all of them
+        if (!empty($data['ldap_servers']) ||
+            !empty($data['ldap_port']) ||
+            !empty($data['ldap_search_base']) ||
+            !empty($data['ldap_domain']) ||
+            !empty($data['ldap_bind_user_dn']) ||
+            !empty($data['ldap_bind_password'])
+        ) {
+            $managing_ldap = true;
+            $rules['ldap_servers'] = 'required|max:255';
+            $rules['ldap_port'] = 'required|integer';
+            $rules['ldap_search_base'] = 'required|max:255';
+            $rules['ldap_domain'] = 'required|max:255';
+            $rules['ldap_bind_user_dn'] = 'required|max:255';
+            $rules['ldap_bind_password'] = 'required|max:255';
+        }
+
+        // Validate the incoming info
+        $validator = Validator::make($data, $rules);
+        // If we have errors return to the last page and show the errors
+        if ($validator->fails()) return redirect()->route('preferences')->withErrors($validator)->withInput();
+        // Create a new preference or get the first one.
+        $pref = (Preference::all()->count() > 0) ? Preference::all()->first() : new Preference();
+        $pref->application_name = $data['application_name'];
+        $pref->application_email = $data['application_email_address'];
+
+        // Are we managing LDAP?
+        if ($managing_ldap) {
+            $pref->ldap_servers = $data['ldap_servers'];
+            $pref->ldap_port = $data['ldap_port'];
+            $pref->ldap_search_base = $data['ldap_search_base'];
+            $pref->ldap_domain = $data['ldap_domain'];
+            $pref->ldap_bind_user_dn = $data['ldap_bind_user_dn'];
+            $pref->ldap_bind_password = $data['ldap_bind_password'];
+            $pref->ldap_ssl = isset($data['ldap_ssl']) ? true : false;
+        }
+
+        // Save the preferences
+        $pref->save();
+        // Return with a status message
+        $request->session()->flash('alert-success', 'Preferences Saved');
+        return redirect()->route('preferences');
     }
 }

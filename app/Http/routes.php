@@ -32,6 +32,9 @@ Route::group(['middleware' => ['admin']], function () {
     // Analytic routes
     Route::get('dashboard', ['as' => 'dashboard', 'uses' => 'HomeController@dashboard']);
     Route::get('timeline', ['as' => 'dashboard', 'uses' => 'HomeController@timeline']);
+    // Preferences
+    Route::get('preferences', ['as' => 'preferences', 'uses' => 'HomeController@getPreferences']);
+    Route::post('preferences', ['as' => 'preferences', 'uses' => 'HomeController@savePreferences']);
     // Local user management routes
     Route::group(['prefix' => 'users'], function () {
         // View all users

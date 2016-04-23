@@ -29,6 +29,21 @@
                                 </div>
                             </div>
 
+                            <div class="form-group{{ $errors->has('identifier') ? ' has-error' : '' }}">
+                                <label class="col-md-4 control-label">ID Number</label>
+
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" name="identifier"
+                                           value="{{ old('identifier') }}" placeholder="0170630">
+
+                                    @if ($errors->has('identifier'))
+                                        <span class="help-block">
+                                        <strong>{{ $errors->first('identifier') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
+
                             <div class="form-group{{ $errors->has('ssn') ? ' has-error' : '' }}">
                                 <label class="col-md-4 control-label">Social Security Number</label>
 
@@ -49,7 +64,7 @@
 
                                 <div class="col-md-6">
                                     <input type="text" class="form-control" name="dob"
-                                           value="{{ old('dob') }}" placeholder="1970-01-29">
+                                           value="{{ old('dob') }}" placeholder="1992-01-05 (yyyy-mm-dd)">
 
                                     @if ($errors->has('dob'))
                                         <span class="help-block">

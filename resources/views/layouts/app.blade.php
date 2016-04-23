@@ -54,7 +54,9 @@
                     <li><a href="{{ url('/') }}"><i class="fa fa-btn fa-unlock-alt"></i>Verify</a></li>
                     @if (Auth::user()->isAdmin)
                         <li><a href="{{ url('/dashboard') }}"><i class="fa fa-btn fa-dashboard"></i>Dashboard</a></li>
-                        <li><a href="{{ url('/users') }}"><i class="fa fa-btn fa-group"></i>Users</a></li>
+                        <li><a href="{{ url('/timeline') }}"><i class="fa fa-btn fa-expand"></i>Recent Activity</a></li>
+                        <li><a href="{{ url('/users') }}"><i class="fa fa-btn fa-group"></i>Local Users</a></li>
+                        <li><a href="{{ url('/preferences') }}"><i class="fa fa-btn fa-cogs"></i>Application Preferences</a></li>
                     @endif
                 @endif
             </ul>
@@ -85,7 +87,7 @@
 <div class="flash-message">
     @foreach (['danger', 'warning', 'success', 'info'] as $msg)
         @if(Session::has('alert-' . $msg))
-            <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#" class="close"
+            <p class="alert alert-{{ $msg }} center-div">{{ Session::get('alert-' . $msg) }} <a href="#" class="close"
                                                                                      data-dismiss="alert"
                                                                                      aria-label="close">&times;</a></p>
         @endif

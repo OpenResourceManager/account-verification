@@ -17,9 +17,11 @@ class CreateVerificationRequestTable extends Migration
             $table->unsignedInteger('user_id');
             $table->boolean('verified');
             $table->string('request_username');
+            $table->string('request_identifier');
             $table->string('request_ssn');
             $table->string('request_dob');
             $table->string('returned_username')->nullable();
+            $table->string('returned_identifier')->nullable();
             $table->string('returned_ssn')->nullable();
             $table->string('returned_dob')->nullable();
             $table->unsignedInteger('returned_user_id')->nullable();

@@ -210,4 +210,10 @@
 .big-icon {
   font-size: 128px; }
 
+.padded_timeline {
+  padding-top: 10px; }
+
+.inner_padding_right {
+  padding-right: 50px; }
+
 /*# sourceMappingURL=app.css.map */

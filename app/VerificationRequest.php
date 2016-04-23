@@ -20,9 +20,11 @@ class VerificationRequest extends Model
         'user_id',
         'verified',
         'request_username',
+        'request_identifier',
         'request_ssn',
         'request_dob',
         'returned_username',
+        'returned_identifier',
         'returned_ssn',
         'returned_dob',
         'returned_user_id'
