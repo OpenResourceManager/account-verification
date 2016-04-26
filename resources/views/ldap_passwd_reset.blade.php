@@ -21,12 +21,22 @@
                               action="{{ url('password', [$token]) }}">
                             {!! csrf_field() !!}
 
+                            <div class="center-div form-group">
+                                <p>Ask the user for an external email.</p>
+                            </div>
+
                             @if(!empty($emails))
+                                <div class="center-div form-group">
+                                    <h3>Option 1:</h3>
+                                    <p>The user's external email address may be in this list.</p>
+                                </div>
+
                                 <div class="form-group{{ $errors->has('known_email_address') ? ' has-error' : '' }}">
                                     <label class="col-md-4 control-label" for="known_email_select">Known E-Mail
                                         Addresses</label>
                                     <div class="col-md-6">
-                                        <select class="form-control" id="known_email_address" name="known_email_address">
+                                        <select class="form-control" id="known_email_address"
+                                                name="known_email_address">
                                             <option value="">-- select or enter a new address --
                                             </option>
                                             @foreach($emails as $email_rec)
@@ -40,6 +50,14 @@
                                     </span>
                                         @endif
                                     </div>
+                                </div>
+                            @endif
+
+                            @if(!empty($emails))
+                                <div class="center-div form-group">
+                                    <h3>Option 2:</h3>
+                                    <p>If the user's external email is not in the known email list. Provide a new external email
+                                        here.</p>
                                 </div>
                             @endif
 
