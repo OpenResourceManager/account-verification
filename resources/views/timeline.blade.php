@@ -55,9 +55,9 @@ $total = $merged->count();
                                         @else
                                             @if($request->pending)
                                                 @if($expired)
-                                                    <div class="timeline-badge danger"><i class="fa fa-lock"></i></div>
+                                                    <div class="timeline-badge danger"><i class="fa fa-hourglass-end"></i></div>
                                                 @else
-                                                    <div class="timeline-badge info"><i class="fa fa-support"></i></div>
+                                                    <div class="timeline-badge info"><i class="fa fa-hourglass-start"></i></div>
                                                 @endif
                                             @else
                                                 <div class="timeline-badge success"><i class="fa fa-unlock-alt"></i>
