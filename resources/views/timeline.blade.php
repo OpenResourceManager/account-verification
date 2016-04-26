@@ -1,9 +1,12 @@
 @extends('layouts.app')
 
 <?php
-
+$prefs = \App\Preference::firstOrFail();
 $verification_requets = \App\VerificationRequest::orderBy('created_at', 'desc')->take(10)->get();
+$reset_requests = \App\LDAPPasswordReset::orderBy('created_at', 'desc')->take(10)->get();
 $count = 0;
+$total = $verification_requets->count() + $reset_requests->count();
+$merged = $verification_requets->merge($reset_requests);
 ?>
 
 @section('content')
@@ -17,20 +20,51 @@ $count = 0;
                             <div class="page-header">
                                 <h1 id="timeline">Activity Timeline</h1>
                             </div>
-                            @if($verification_requets->count() > 0)
+                            @if($total > 0)
                                 <ul class="timeline padded_timeline">
-                                    @foreach($verification_requets as $vr)
+                                    @foreach($merged as $request)
                                         <?php
-                                        $tl_user = $vr->user;
+                                        $tl_user = $request->user;
+                                        $class = null;
+                                        $expired = null;
+                                        switch (strval(get_class($request))) {
+                                            case 'App\VerificationRequest' :
+                                                $class = 'vr';
+                                                break;
+                                            case 'App\LDAPPasswordReset' :
+                                                $class = 'pr';
+                                                $created = strtotime($request->created_at);
+                                                $time_since_request = round(abs(strtotime(Carbon::now()) - $created) / 60);
+                                                if ($time_since_request < $prefs->reset_session_timeout && $request->pending) {
+                                                    $expired = false;
+                                                } else {
+                                                    $expired = true;
+                                                }
+                                                break;
+                                        }
                                         echo ($count % 2 == 0) ? '<li>' : '<li class="timeline-inverted">';
                                         ?>
-                                        @if($vr->verified)
-                                            <div class="timeline-badge success"><i class="fa fa-check-circle"></i>
-                                            </div>
+                                        @if($class == 'vr')
+                                            @if($request->verified)
+                                                <div class="timeline-badge success"><i class="fa fa-check-circle"></i>
+                                                </div>
+                                            @else
+                                                <div class="timeline-badge danger"><i class="fa fa-times-circle"></i>
+                                                </div>
+                                            @endif
                                         @else
-                                            <div class="timeline-badge danger"><i class="fa fa-times-circle"></i>
-                                            </div>
+                                            @if($request->pending)
+                                                @if($expired)
+                                                    <div class="timeline-badge danger"><i class="fa fa-lock"></i></div>
+                                                @else
+                                                    <div class="timeline-badge info"><i class="fa fa-support"></i></div>
+                                                @endif
+                                            @else
+                                                <div class="timeline-badge success"><i class="fa fa-unlock-alt"></i>
+                                                </div>
+                                            @endif
                                         @endif
+
                                         <div class="timeline-panel">
                                             <div class="timeline-heading">
                                                 <h4 class="timeline-title">Verifier: {{$tl_user->name}}</h4>
@@ -47,19 +81,43 @@ $count = 0;
                                                              width="96">
                                                     </a>
                                                 @endif
+
                                                 <p>
-                                                    A verification request was made by, {{$tl_user->name}}.
+                                                    A {{ ($class == 'vr') ? 'user verification' : 'password reset'  }}
+                                                    request was
+                                                    made by, {{$tl_user->name}}.
                                                 </p>
+
                                                 <p>
                                                     This request was made on the behalf
-                                                    of, {{$vr->request_username}}.
+                                                    of, {{$request->request_username}}.
                                                 </p>
+
                                                 <p>
-                                                    The request
-                                                    was {{$vr->verified ? 'verified' : 'determined to be invalid'}}
-                                                    at {{$vr->updated_at->format('g:i a')}}
-                                                    on {{$vr->updated_at->format('l, F j, Y')}}.
+                                                    @if($class == 'vr')
+                                                        The request
+                                                        was {{$request->verified ? 'verified' : 'determined to be invalid'}}
+                                                        at {{$request->updated_at->format('g:i a')}}
+                                                        on {{$request->updated_at->format('l, F j, Y')}}.
+                                                    @else
+                                                        @if($request->pending)
+                                                            @if($expired)
+                                                                The request expired
+                                                                at {{$request->updated_at->format('g:i a')}}
+                                                                on {{$request->updated_at->format('l, F j, Y')}}.
+                                                            @else
+                                                                The request is still pending as
+                                                                of {{$request->updated_at->format('g:i a')}}  -
+                                                                {{$request->updated_at->format('l, F j, Y')}}.
+                                                            @endif
+                                                        @else
+                                                            The request was completed
+                                                            at {{$request->updated_at->format('g:i a')}}
+                                                            on {{$request->updated_at->format('l, F j, Y')}}.
+                                                        @endif
+                                                    @endif
                                                 </p>
+
                                             </div>
                                         </div>
                                         </li>

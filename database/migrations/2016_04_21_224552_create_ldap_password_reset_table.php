@@ -16,7 +16,7 @@ class CreateLdapPasswordResetTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('api_user_id');
-            $table->string('username');
+            $table->string('request_username');
             $table->string('name');
             $table->string('token');
             $table->boolean('pending');

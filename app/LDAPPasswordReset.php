@@ -21,7 +21,7 @@ class LDAPPasswordReset extends Model
     protected $fillable = [
         'user_id',
         'api_user_id',
-        'username',
+        'request_username',
         'name',
         'token',
         'pending'

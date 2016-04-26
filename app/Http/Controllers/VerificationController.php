@@ -156,7 +156,7 @@ class VerificationController extends Controller
         LDAPPasswordReset::create([
             'user_id' => Auth::user()->id,
             'api_user_id' => $target['api_user_id'],
-            'username' => $target['username'],
+            'request_username' => $target['username'],
             'name' => $target['name_first'] . ' ' . $target['name_last'],
             'token' => $token,
             'pending' => true
