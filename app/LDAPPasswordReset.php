@@ -11,6 +11,8 @@ class LDAPPasswordReset extends Model
 
     protected $dates = ['deleted_at'];
 
+    protected $table = 'ldap_password_resets';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -18,7 +20,11 @@ class LDAPPasswordReset extends Model
      */
     protected $fillable = [
         'user_id',
-        'username'
+        'api_user_id',
+        'username',
+        'name',
+        'token',
+        'pending'
     ];
 
     /**

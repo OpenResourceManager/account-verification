@@ -17,16 +17,22 @@ class DetectNoSettings
      */
     public function handle($request, Closure $next)
     {
-
-        $user = $request->user();
-        $prefsCount = Preference::all()->count();
-        if ($user->isAdmin && $prefsCount < 1) {
-            $request->session()->flash('alert-warning', 'The application\'s preferences have not been filled out.');
-            if ($request->route()->getName() != 'preferences') {
-                return redirect()->route('preferences');
+        if (Auth::check()) {
+            $user = $request->user();
+            $prefsCount = Preference::all()->count();
+            if ($prefsCount < 1) {
+                if ($user->isAdmin) {
+                    $request->session()->flash('alert-warning', 'The application\'s preferences have not been filled out.');
+                    if ($request->route()->getName() != 'preferences' && $request->route()->uri() != 'logout') {
+                        return redirect()->route('preferences');
+                    }
+                } else {
+                    if ($request->route()->getName() != 'maintenance' && $request->route()->uri() != 'logout') {
+                        return redirect()->route('maintenance');
+                    }
+                }
             }
         }
-
         return $next($request);
     }
 }

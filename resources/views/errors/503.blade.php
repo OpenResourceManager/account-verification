@@ -1,47 +1,27 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Be right back.</title>
+@extends('layouts.error')
 
-        <link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">
-
-        <style>
-            html, body {
-                height: 100%;
-            }
-
-            body {
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                color: #B0BEC5;
-                display: table;
-                font-weight: 100;
-                font-family: 'Lato';
-            }
-
-            .container {
-                text-align: center;
-                display: table-cell;
-                vertical-align: middle;
-            }
-
-            .content {
-                text-align: center;
-                display: inline-block;
-            }
-
-            .title {
-                font-size: 72px;
-                margin-bottom: 40px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="content">
-                <div class="title">Be right back.</div>
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="center-div">
+                <h2>We're undergoing routine maintenance.</h2>
+                <h4>(The hamsters that power this site are taking a water break.)</h4>
+                <img src="img/maintenance.svg" width="256" alt="System Maintenance">
+                <h2>We'll be right back. Thank you for your patience!</h2>
             </div>
         </div>
-    </body>
-</html>
+    </div>
+@endsection
+
+@section('foot')
+    <div class="navbar navbar-fixed-bottom">
+        <div class="footer center-div">
+            <p><i class="fa fa-creative-commons"></i> "<a about="_blank"
+                                                          href="https://thenounproject.com/term/hamster-wheel/4739">Hamster
+                    Wheel</a>" by <a
+                        about="_blank" href="https://thenounproject.com/olivierguin">Olivier Guin</a> is licensed under
+                <a
+                        about="_blank" href="https://creativecommons.org/licenses/by/3.0/us/legalcode">CC BY 3.0</a></p>
+        </div>
+    </div>
+@endsection

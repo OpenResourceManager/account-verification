@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests;
+use App\LDAPPasswordReset;
+use App\Preference;
 use App\VerificationRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use App\User;
 use App\UUD\Client\UUDClient;
+use Illuminate\Support\Str;
 
 class VerificationController extends Controller
 {
@@ -53,7 +54,7 @@ class VerificationController extends Controller
             return Redirect::back()->withErrors($validator, 'verify')->withInput($data);
         }
 
-        //
+        // Store target info
         $target['username'] = $data['username'];
         $target['identifier'] = $data['identifier'];
 
@@ -66,8 +67,11 @@ class VerificationController extends Controller
         $veriRequest->request_ssn = $data['ssn'];
         $veriRequest->request_dob = $data['dob'];
 
+        // Load our preferences
+        $prefs = Preference::firstOrFail();
+
         // Create a new UUD client;
-        $client = new UUDClient(Config::get('uud.api_url'), Config::get('uud.api_key'));
+        $client = new UUDClient($prefs->uud_api_url, $prefs->uud_api_key);
 
         // Request user info based on username
         $user_result = $client->get_user_by_username($data['username']);
@@ -96,6 +100,7 @@ class VerificationController extends Controller
         $target = $user_result['body']['result'];
         // Store the remote primary key, to make requests faster
         $remote_id = $user_result['body']['result']['id'];
+        $target['api_user_id'] = $remote_id;
         // Store more info about the request, for audits and analytics
         $veriRequest->returned_username = $user_result['body']['result']['username'];
         $veriRequest->returned_identifier = $user_result2['body']['result']['identifier'];
@@ -138,8 +143,27 @@ class VerificationController extends Controller
      */
     public function verifySuccess(Request $request)
     {
+        // Generate a unique random token
+        do {
+            $token = Str::quickRandom(64);
+            $exists = LDAPPasswordReset::where('token', $token)->first();
+        } while (!empty($exists));
+
+        // Get the target info
         $target = session('target');
-        return view('verify_success', ['target', $target]);
+
+        // Generate a new password reset request
+        LDAPPasswordReset::create([
+            'user_id' => Auth::user()->id,
+            'api_user_id' => $target['api_user_id'],
+            'username' => $target['username'],
+            'name' => $target['name_first'] . ' ' . $target['name_last'],
+            'token' => $token,
+            'pending' => true
+        ]);
+
+        // Show the view
+        return view('verify_success', ['target' => $target, 'token' => $token]);
     }
 
     /**

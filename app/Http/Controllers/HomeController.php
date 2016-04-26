@@ -21,7 +21,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except('getMaintenance');
     }
 
     /**
@@ -32,6 +32,11 @@ class HomeController extends Controller
     public function profile()
     {
         return view('profile');
+    }
+
+    public function getMaintenance(Request $request)
+    {
+        return view('errors.503');
     }
 
     /**
@@ -67,15 +72,20 @@ class HomeController extends Controller
      */
     public function changePassword(Request $request)
     {
+        // Read our prefs
+        $prefs = Preference::firstOrFail();
         // Get current user
         $user = Auth::user();
         // Get token repo
         $tokens = Password::getRepository();
         // Generate a token for the user
         $token = $tokens->create($user);
+        // create vars for from and app name
+        $app_from = $prefs->application_email;
+        $app_name = $prefs->application_name;
         // Send a recovery notice
-        Mail::send('auth.emails.password_change', ['user' => $user, 'token' => $token], function ($m) use ($user) {
-            $m->from('no-reply@sage.edu', 'User Verification');
+        Mail::send('auth.emails.password_change', ['user' => $user, 'token' => $token], function ($m) use ($user, $app_from, $app_name) {
+            $m->from($app_from, $app_name);
             $m->to($user->email, $user->name)->subject('Password Change');
         });
         // Return with a status message
@@ -151,6 +161,8 @@ class HomeController extends Controller
      */
     public function postNewUser(Request $request)
     {
+        // Read our prefs
+        $prefs = Preference::firstOrFail();
         // Store the request data in a var
         $data = $request->all();
         // Get the user
@@ -181,12 +193,14 @@ class HomeController extends Controller
         $tokens = Password::getRepository();
         // Generate a token for the user
         $token = $tokens->create($user);
+        // create vars for from and app name
+        $app_from = $prefs->application_email;
+        $app_name = $prefs->application_name;
         // Send a welcome email
-        Mail::send('auth.emails.welcome', ['user' => $user, 'token' => $token], function ($m) use ($user) {
-            $m->from('no-reply@sage.edu', 'User Verification');
+        Mail::send('auth.emails.welcome', ['user' => $user, 'token' => $token], function ($m) use ($user, $app_name, $app_from) {
+            $m->from($app_from, $app_name);
             $m->to($user->email, $user->name)->subject('Welcome!');
         });
-
         // Return with a success message
         $request->session()->flash('alert-success', 'User was created!');
         return redirect()->route('users');
@@ -218,6 +232,8 @@ class HomeController extends Controller
      */
     public function restoreTrashedUser(Request $request, $id)
     {
+        // Read our prefs
+        $prefs = Preference::firstOrFail();
         // Store the request data in a var
         $data = $request->all();
         // Get the user
@@ -242,9 +258,12 @@ class HomeController extends Controller
         $tokens = Password::getRepository();
         // Generate a token for the user
         $token = $tokens->create($user);
+        // create vars for from and app name
+        $app_from = $prefs->application_email;
+        $app_name = $prefs->application_name;
         // Send a recovery notice
-        Mail::send('auth.emails.recovery', ['user' => $user, 'token' => $token], function ($m) use ($user) {
-            $m->from('no-reply@sage.edu', 'User Verification');
+        Mail::send('auth.emails.recovery', ['user' => $user, 'token' => $token], function ($m) use ($user, $app_from, $app_name) {
+            $m->from($app_from, $app_name);
             $m->to($user->email, $user->name)->subject('Account Recovery');
         });
         // Return with a success message
@@ -297,9 +316,19 @@ class HomeController extends Controller
         $data = $request->all();
         // Validator rules
         $rules = [
+            'company_name' => 'required|max:255',
             'application_name' => 'required|max:255',
             'application_email_address' => 'required|email|max:255',
+            'password_reset_session_timeout' => 'required|integer|max:60|min:1',
+            'uud_api_url' => 'required|url',
+            'uud_api_key' => 'required|size:64',
         ];
+
+        // If we are getting a self service url, then make sure it is valid
+        if (!empty($data['self_service_url'])) {
+            $rules['self_service_url'] = 'required|url';
+        }
+
         $managing_ldap = false;
         // If any of the ldap settings are filled out, require all of them
         if (!empty($data['ldap_servers']) ||
@@ -326,6 +355,12 @@ class HomeController extends Controller
         $pref = (Preference::all()->count() > 0) ? Preference::all()->first() : new Preference();
         $pref->application_name = $data['application_name'];
         $pref->application_email = $data['application_email_address'];
+        $pref->reset_session_timeout = $data['password_reset_session_timeout'];
+        $pref->uud_api_url = $data['uud_api_url'];
+        $pref->uud_api_key = $data['uud_api_key'];
+        $pref->company_name = $data['company_name'];
+        // Optional setting should be null when empty in form
+        $pref->self_service_url = empty($data['self_service_url']) ? null : $data['self_service_url'];
 
         // Are we managing LDAP?
         if ($managing_ldap) {
@@ -336,6 +371,14 @@ class HomeController extends Controller
             $pref->ldap_bind_user_dn = $data['ldap_bind_user_dn'];
             $pref->ldap_bind_password = $data['ldap_bind_password'];
             $pref->ldap_ssl = isset($data['ldap_ssl']) ? true : false;
+        } else {
+            $pref->ldap_servers = null;
+            $pref->ldap_port = null;
+            $pref->ldap_search_base = null;
+            $pref->ldap_domain = null;
+            $pref->ldap_bind_user_dn = null;
+            $pref->ldap_bind_password = null;
+            $pref->ldap_ssl = null;
         }
 
         // Save the preferences

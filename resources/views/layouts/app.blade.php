@@ -1,11 +1,20 @@
-<!DOCTYPE html>
+<?php
+$prefs = \App\Preference::all()->first();
+if (!empty($prefs)) {
+    $app_name = (isset($prefs->application_name)) ? $prefs->application_name : 'User Verification';
+} else {
+    $app_name = 'User Verification';
+}
+?>
+
+        <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>User Verification</title>
+    <title>{{$app_name}}</title>
 
     <!-- Fonts -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.0/css/font-awesome.min.css" rel='stylesheet'
@@ -26,6 +35,7 @@
             margin-right: 6px;
         }
     </style>
+    @yield('head')
 </head>
 <body id="app-layout">
 <nav class="navbar navbar-default navbar-static-top">
@@ -43,7 +53,7 @@
 
             <!-- Branding Image -->
             <a class="navbar-brand" href="{{ url('/') }}">
-                <i class="fa fa-btn fa-check-circle"></i>User Verification
+                <i class="fa fa-btn fa-check-circle"></i>{{$app_name}}
             </a>
         </div>
 
@@ -53,10 +63,11 @@
                 @if (!Auth::guest())
                     <li><a href="{{ url('/') }}"><i class="fa fa-btn fa-unlock-alt"></i>Verify</a></li>
                     @if (Auth::user()->isAdmin)
-                        <li><a href="{{ url('/dashboard') }}"><i class="fa fa-btn fa-dashboard"></i>Dashboard</a></li>
+                        {{--  <li><a href="{{ url('/dashboard') }}"><i class="fa fa-btn fa-dashboard"></i>Dashboard</a></li> --}}
                         <li><a href="{{ url('/timeline') }}"><i class="fa fa-btn fa-expand"></i>Recent Activity</a></li>
                         <li><a href="{{ url('/users') }}"><i class="fa fa-btn fa-group"></i>Local Users</a></li>
-                        <li><a href="{{ url('/preferences') }}"><i class="fa fa-btn fa-cogs"></i>Application Preferences</a></li>
+                        <li><a href="{{ url('/preferences') }}"><i class="fa fa-btn fa-cogs"></i>App Settings</a>
+                        </li>
                     @endif
                 @endif
             </ul>
@@ -88,8 +99,9 @@
     @foreach (['danger', 'warning', 'success', 'info'] as $msg)
         @if(Session::has('alert-' . $msg))
             <p class="alert alert-{{ $msg }} center-div">{{ Session::get('alert-' . $msg) }} <a href="#" class="close"
-                                                                                     data-dismiss="alert"
-                                                                                     aria-label="close">&times;</a></p>
+                                                                                                data-dismiss="alert"
+                                                                                                aria-label="close">&times;</a>
+            </p>
         @endif
     @endforeach
 </div>
@@ -103,4 +115,7 @@
         crossorigin="anonymous"></script>
 {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
 </body>
+<footer>
+    @yield('foot')
+</footer>
 </html>

@@ -12,14 +12,19 @@ class Preference extends Model
     protected $dates = ['deleted_at'];
 
     protected $fillable = [
+        'company_name',
         'application_name',
         'application_email',
+        'self_service_url',
+        'reset_session_timeout',
+        'uud_api_url',
+        'uud_api_key',
         'ldap_servers',
         'ldap_port',
         'ldap_ssl',
         'ldap_bind_user_dn',
         'ldap_bind_password',
         'ldap_search_base',
-        'ldap_domain',
+        'ldap_domain'
     ];
 }

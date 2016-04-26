@@ -14,8 +14,13 @@ class CreatePreferencesTable extends Migration
     {
         Schema::create('preferences', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('company_name');
             $table->string('application_name');
             $table->string('application_email');
+            $table->unsignedInteger('reset_session_timeout');
+            $table->string('self_service_url')->nullable();
+            $table->string('uud_api_url');
+            $table->string('uud_api_key');
             $table->string('ldap_servers')->nullable();
             $table->unsignedInteger('ldap_port')->nullable();
             $table->boolean('ldap_ssl')->nullable();

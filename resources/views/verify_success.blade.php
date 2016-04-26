@@ -19,7 +19,14 @@ if (!isset($target) || !$target || empty($target)) {
                     <div class="panel-body">
                         <div class="center-div">
                             <h2>{{$target['name_first'] . ' ' . $target['name_last']}} is verified!</h2>
-                            <span class="big-icon"><i class="fa fa-check-circle text-success"></i></span>
+                            @if($token)
+                                <a href="{{url('password', [$token])}}">
+                                    <span class="big-icon"><i class="fa fa-check-circle text-success"></i></span>
+                                    <h3>Click here to perform a password reset.</h3>
+                                </a>
+                            @else
+                                <span class="big-icon"><i class="fa fa-check-circle text-success"></i></span>
+                            @endif
                         </div>
                     </div>
                 </div>

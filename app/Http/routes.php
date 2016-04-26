@@ -19,13 +19,15 @@ Route::get('/', function () {
 Route::get('/home', function () {
     return redirect()->route('home');
 });
+// Maintenance landing page
+Route::get('maintenance', ['as' => 'maintenance', 'uses' => 'HomeController@getMaintenance']);
 // Enable the auth routes (login, logout, ect..)
 Route::auth();
 // A user's profile page
 Route::get('profile', ['as' => 'profile', 'uses' => 'HomeController@profile']);
 // Save any changes made to a user's profile
 Route::post('profile', ['as' => 'profile', 'uses' => 'HomeController@saveProfile']);
-//
+// Route for changing your password
 Route::get('passwd/change', ['as' => 'change_passwd', 'uses' => 'HomeController@changePassword']);
 // Routes that only administrators can visit.
 Route::group(['middleware' => ['admin']], function () {
@@ -68,4 +70,11 @@ Route::group(['prefix' => 'verify'], function () {
     Route::get('/success', ['as' => 'verify_success', 'uses' => 'VerificationController@verifySuccess']);
     // The verification request was unsuccessful, show the failure page
     Route::get('/failure', ['as' => 'verify_fail', 'uses' => 'VerificationController@verifyFail']);
+});
+// Routes that deal with resetting a user's LDAP password
+Route::group(['prefix' => 'password'], function () {
+    // The password reset form
+    Route::get('/{token}', ['as' => 'password', 'uses' => 'LDAPResetController@index']);
+    // Get password reset form info
+    Route::post('/{token}', ['as' => 'password', 'uses' => 'LDAPResetController@sendReset']);
 });
