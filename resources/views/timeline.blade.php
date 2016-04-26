@@ -2,11 +2,11 @@
 
 <?php
 $prefs = \App\Preference::firstOrFail();
-$verification_requets = \App\VerificationRequest::orderBy('created_at', 'desc')->take(10)->get();
-$reset_requests = \App\LDAPPasswordReset::orderBy('created_at', 'desc')->take(10)->get();
+$verification_requets = \App\VerificationRequest::orderBy('created_at', 'desc')->take(10)->get()->all();
+$reset_requests = \App\LDAPPasswordReset::orderBy('created_at', 'desc')->take(10)->get()->all();
 $count = 0;
-$total = $verification_requets->count() + $reset_requests->count();
-$merged = $verification_requets->merge($reset_requests);
+$merged = \Illuminate\Database\Eloquent\Collection::make(array_merge($verification_requets, $reset_requests))->sortByDesc('created_at');
+$total = $merged->count();
 ?>
 
 @section('content')
@@ -34,7 +34,7 @@ $merged = $verification_requets->merge($reset_requests);
                                             case 'App\LDAPPasswordReset' :
                                                 $class = 'pr';
                                                 $created = strtotime($request->created_at);
-                                                $time_since_request = round(abs(strtotime(Carbon::now()) - $created) / 60);
+                                                $time_since_request = round(abs(strtotime(\Carbon\Carbon::now()) - $created) / 60);
                                                 if ($time_since_request < $prefs->reset_session_timeout && $request->pending) {
                                                     $expired = false;
                                                 } else {
@@ -67,6 +67,11 @@ $merged = $verification_requets->merge($reset_requests);
 
                                         <div class="timeline-panel">
                                             <div class="timeline-heading">
+                                                @if($class == 'vr')
+                                                    <h2 class="timeline-title">User Verification</h2>
+                                                @else
+                                                    <h2 class="timeline-title">Password Reset</h2>
+                                                @endif
                                                 <h4 class="timeline-title">Verifier: {{$tl_user->name}}</h4>
                                             </div>
                                             <div class="timeline-body">
