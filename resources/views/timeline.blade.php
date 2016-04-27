@@ -58,8 +58,9 @@ $total = $merged->count();
                                                     <div class="timeline-badge danger"><i
                                                                 class="fa fa-hourglass-end"></i></div>
                                                 @else
-                                                    <div class="timeline-badge info"><i
-                                                                class="fa fa-hourglass-start"></i></div>
+                                                    <div class="timeline-badge info">
+                                                        <i class="fa fa-hourglass-start"></i>
+                                                    </div>
                                                 @endif
                                             @else
                                                 <div class="timeline-badge success"><i class="fa fa-unlock-alt"></i>
@@ -113,7 +114,8 @@ $total = $merged->count();
                                                                 at {{$request->updated_at->format('g:i a')}}
                                                                 on {{$request->updated_at->format('l, F j, Y')}}.
                                                             @else
-                                                                The request is still pending as
+                                                                <a href="{{url('password', $request->token)}}">The
+                                                                    request</a> is still pending as
                                                                 of {{$request->updated_at->format('g:i a')}}  -
                                                                 {{$request->updated_at->format('l, F j, Y')}}.
                                                             @endif
