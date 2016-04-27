@@ -107,7 +107,16 @@ class LDAPResetController extends Controller
             // If we have errors return to the last page and show the errors
             if ($validator->fails()) {
                 $request->session()->flash('alert-danger', 'Please provide a new email address or select a known address if there is one available.');
-                return Redirect::back()->withErrors($validator)->withInput($data);
+                return redirect()->back()->withErrors($validator)->withInput($data);
+            }
+
+            // External address verification
+            $email_domain = strtolower(trim(explode('@', $email)[1]));
+            // Is the reset email an internal email?
+            if (strval($email_domain) === strval(strtolower(trim($prefs->ldap_domain)))) {
+                // If so Redirect back with errors.
+                $kind = (empty($data['email'])) ? 'known_email_address' : 'email';
+                return redirect()->back()->withErrors([$kind => ['Provide an address from a domain other than: "' . $email_domain.'"']])->withInput($data);
             }
 
             $name = $reset_request->name;
