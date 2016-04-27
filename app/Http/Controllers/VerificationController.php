@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\LDAPPasswordReset;
 use App\Preference;
+use App\UUD\Ldap;
 use App\VerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -143,27 +144,32 @@ class VerificationController extends Controller
      */
     public function verifySuccess(Request $request)
     {
-        // Generate a unique random token
-        do {
-            $token = Str::quickRandom(64);
-            $exists = LDAPPasswordReset::where('token', $token)->first();
-        } while (!empty($exists));
-
+        $prefs = Preference::firstOrFail();
         // Get the target info
         $target = session('target');
 
-        // Generate a new password reset request
-        LDAPPasswordReset::create([
-            'user_id' => Auth::user()->id,
-            'api_user_id' => $target['api_user_id'],
-            'request_username' => $target['username'],
-            'name' => $target['name_first'] . ' ' . $target['name_last'],
-            'token' => $token,
-            'pending' => true
-        ]);
-
-        // Show the view
-        return view('verify_success', ['target' => $target, 'token' => $token]);
+        if ($prefs->ldap_enabled) {
+            // Generate a unique random token
+            do {
+                $token = Str::quickRandom(64);
+                $exists = LDAPPasswordReset::where('token', $token)->first();
+            } while (!empty($exists));
+            
+            // Generate a new password reset request
+            LDAPPasswordReset::create([
+                'user_id' => Auth::user()->id,
+                'api_user_id' => $target['api_user_id'],
+                'request_username' => $target['username'],
+                'name' => $target['name_first'] . ' ' . $target['name_last'],
+                'token' => $token,
+                'pending' => true
+            ]);
+            // Show the view with password reset info
+            return view('verify_success', ['target' => $target, 'token' => $token, 'can_reset_password' => $prefs->ldap_enabled]);
+        } else {
+            // Show the view without password reset info
+            return view('verify_success', ['target' => $target, 'can_reset_password' => $prefs->ldap_enabled]);
+        }
     }
 
     /**

@@ -163,7 +163,7 @@ vi .env;
 # Set your environtment to production
 ```
 
-* Configure the UUD Client:
+* Configure the UUD LdapClient:
 
 ```shell
 cp config/uud.example.php config/uud.php;

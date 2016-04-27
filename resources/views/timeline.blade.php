@@ -55,9 +55,11 @@ $total = $merged->count();
                                         @else
                                             @if($request->pending)
                                                 @if($expired)
-                                                    <div class="timeline-badge danger"><i class="fa fa-hourglass-end"></i></div>
+                                                    <div class="timeline-badge danger"><i
+                                                                class="fa fa-hourglass-end"></i></div>
                                                 @else
-                                                    <div class="timeline-badge info"><i class="fa fa-hourglass-start"></i></div>
+                                                    <div class="timeline-badge info"><i
+                                                                class="fa fa-hourglass-start"></i></div>
                                                 @endif
                                             @else
                                                 <div class="timeline-badge success"><i class="fa fa-unlock-alt"></i>
@@ -76,12 +78,12 @@ $total = $merged->count();
                                             </div>
                                             <div class="timeline-body">
                                                 @if($tl_user->id == Auth::user()->id)
-                                                    <a href="{{url('/profile')}}">
+                                                    <a target="_blank" href="{{url('profile')}}">
                                                         <img src="{{Gravatar::src( $tl_user->email , 256)}}"
                                                              width="96">
                                                     </a>
                                                 @else
-                                                    <a href="{{url('/users/'.$tl_user->id)}}">
+                                                    <a target="_blank" href="{{url('users', $tl_user->id)}}">
                                                         <img src="{{Gravatar::src( $tl_user->email , 256)}}"
                                                              width="96">
                                                     </a>

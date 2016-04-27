@@ -19,10 +19,11 @@ class Preference extends Model
         'reset_session_timeout',
         'uud_api_url',
         'uud_api_key',
+        'ldap_enabled',
         'ldap_servers',
         'ldap_port',
         'ldap_ssl',
-        'ldap_bind_user_dn',
+        'ldap_bind_user',
         'ldap_bind_password',
         'ldap_search_base',
         'ldap_domain'

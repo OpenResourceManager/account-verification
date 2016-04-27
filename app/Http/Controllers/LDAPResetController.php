@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Preference;
 use App\UUD\Client\UUDClient;
 use App\UUD\helpers\Security;
+use App\UUD\Ldap;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
@@ -115,8 +116,17 @@ class LDAPResetController extends Controller
 
             $new_password = Security::strongPassword(16);
 
-            //@todo Reset LDAP password here
+            $ldap = new Ldap();
+            $dn = $ldap->samAccountName2Dn($reset_request->request_username);
+            $result = $ldap->changePassword($dn, $new_password);
 
+            // If something failed, redirect back and do not notify the user. Give ldap error back in flash message
+            if ($result[0] === false) {
+                $request->session()->flash('alert-danger', 'We\'ve Encountered an error while setting the user\'s password... ' . $result[1]);
+                return Redirect::back()->withInput($data);
+            }
+
+            // Mail the new password to the user
             Mail::send('mail.ldap_password_change', ['name' => $name, 'password' => $new_password, 'company_name' => $company_name, 'self_service_url' => $self_service_url], function ($m) use ($email, $name, $app_from, $company_name) {
                 $m->from($app_from, $company_name);
                 $m->to($email, $name)->subject('Password Reset');

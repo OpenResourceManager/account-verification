@@ -21,10 +21,11 @@ class CreatePreferencesTable extends Migration
             $table->string('self_service_url')->nullable();
             $table->string('uud_api_url');
             $table->string('uud_api_key');
+            $table->boolean('ldap_enabled')->default(false);
             $table->string('ldap_servers')->nullable();
             $table->unsignedInteger('ldap_port')->nullable();
             $table->boolean('ldap_ssl')->nullable();
-            $table->string('ldap_bind_user_dn')->nullable();
+            $table->string('ldap_bind_user')->nullable();
             $table->string('ldap_bind_password')->nullable();
             $table->string('ldap_search_base')->nullable();
             $table->string('ldap_domain')->nullable();

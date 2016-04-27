@@ -69,10 +69,10 @@ if (empty(old('ldap_domain'))) {
     $ldap_domain = old('ldap_domain');
 }
 
-if (empty(old('ldap_bind_user_dn'))) {
-    $ldap_bind_user_dn = (empty($pref->ldap_bind_user_dn)) ? '' : $pref->ldap_bind_user_dn;
+if (empty(old('ldap_bind_user'))) {
+    $ldap_bind_user_dn = (empty($pref->ldap_bind_user)) ? '' : $pref->ldap_bind_user;
 } else {
-    $ldap_bind_user_dn = old('ldap_bind_user_dn');
+    $ldap_bind_user_dn = old('ldap_bind_user');
 }
 
 if (empty(old('ldap_bind_password'))) {
@@ -267,17 +267,17 @@ if (isset($pref->ldap_ssl)) {
                                     </div>
                                 </div>
 
-                                <div class="form-group{{ $errors->has('ldap_bind_user_dn') ? ' has-error' : '' }}">
-                                    <label class="col-md-4 control-label">Bind User DN</label>
+                                <div class="form-group{{ $errors->has('ldap_bind_user') ? ' has-error' : '' }}">
+                                    <label class="col-md-4 control-label">Bind User</label>
 
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" name="ldap_bind_user_dn"
+                                        <input type="text" class="form-control" name="ldap_bind_user"
                                                value="{{ $ldap_bind_user_dn }}"
-                                               placeholder="CN=VerifyUser,OU=Users,DC=TLD,DC=DOMAIN">
+                                               placeholder="LdapUsername">
 
-                                        @if ($errors->has('ldap_bind_user_dn'))
+                                        @if ($errors->has('ldap_bind_user'))
                                             <span class="help-block">
-                                        <strong>{{ $errors->first('ldap_bind_user_dn') }}</strong>
+                                        <strong>{{ $errors->first('ldap_bind_user') }}</strong>
                                     </span>
                                         @endif
                                     </div>
@@ -288,7 +288,7 @@ if (isset($pref->ldap_ssl)) {
 
                                     <div class="col-md-6">
                                         <input type="password" class="form-control" name="ldap_bind_password"
-                                               value="{{ $ldap_bind_password }}" placeholder="Verify User Password">
+                                               value="{{ $ldap_bind_password }}" placeholder="Ldap User Password">
 
                                         @if ($errors->has('ldap_bind_password'))
                                             <span class="help-block">

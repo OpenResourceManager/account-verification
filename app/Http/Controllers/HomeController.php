@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\Preference;
 use App\User;
+use App\UUD\Ldap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -314,6 +315,7 @@ class HomeController extends Controller
     {
         // Store the request data in a var
         $data = $request->all();
+        $errors = [];
         // Validator rules
         $rules = [
             'company_name' => 'required|max:255',
@@ -335,7 +337,7 @@ class HomeController extends Controller
             !empty($data['ldap_port']) ||
             !empty($data['ldap_search_base']) ||
             !empty($data['ldap_domain']) ||
-            !empty($data['ldap_bind_user_dn']) ||
+            !empty($data['ldap_bind_user']) ||
             !empty($data['ldap_bind_password'])
         ) {
             $managing_ldap = true;
@@ -343,7 +345,7 @@ class HomeController extends Controller
             $rules['ldap_port'] = 'required|integer';
             $rules['ldap_search_base'] = 'required|max:255';
             $rules['ldap_domain'] = 'required|max:255';
-            $rules['ldap_bind_user_dn'] = 'required|max:255';
+            $rules['ldap_bind_user'] = 'required|max:255';
             $rules['ldap_bind_password'] = 'required|max:255';
         }
 
@@ -364,23 +366,58 @@ class HomeController extends Controller
 
         // Are we managing LDAP?
         if ($managing_ldap) {
-            $pref->ldap_servers = $data['ldap_servers'];
+            // Create a new Ldap object
+            $ldap = new Ldap;
+            // Fix our input into testable formats
+            $hosts = $ldap->hosts2Array($data['ldap_servers']);
+            $domain = $ldap->convertDomain($data['ldap_domain']);
+            // Pass our input into the preferences object
             $pref->ldap_port = $data['ldap_port'];
             $pref->ldap_search_base = $data['ldap_search_base'];
             $pref->ldap_domain = $data['ldap_domain'];
-            $pref->ldap_bind_user_dn = $data['ldap_bind_user_dn'];
+            $pref->ldap_bind_user = $data['ldap_bind_user'];
             $pref->ldap_bind_password = $data['ldap_bind_password'];
             $pref->ldap_ssl = isset($data['ldap_ssl']) ? true : false;
+            // Test each host and the credentials that were passed in from the input.
+            $save_hosts = [];
+            foreach ($hosts as $host) {
+                $bind = $ldap->testBind($host, $pref->ldap_port, $pref->ldap_ssl, $pref->ldap_bind_user, $pref->ldap_bind_password, $domain);
+                if ($bind['status']) {
+                    $save_hosts[] = $host;
+                } else {
+                    $errors[] = 'Could not bind to LDAP host: ' . $host . ' with error: ' . $bind['message'];
+                }
+            }
+            // If we did not return any hosts that returned success on a bind, redirect back and notify the admin.
+            if (empty($save_hosts)) {
+                if (empty($errors)) {
+                    $request->session()->flash('alert-danger', 'Could not save your LDAP configuration. Unable to bind to any of the hosts provided.');
+                } else {
+                    $request->session()->flash('alert-danger', 'Could not save your LDAP configuration. Unable to bind to any of the hosts provided.' . ' ' . implode(' - ', $errors));
+                }
+                return redirect()->back()->withInput();
+            }
+            // We had partial failures, only some hosts worked, notify the admin
+            if (sizeof($save_hosts) != sizeof($hosts) && !empty($save_hosts)) {
+                if (empty($errors)) {
+                    $request->session()->flash('alert-warning', 'Some of the LDAP hosts that were provided were unable to be verified, they will not be saved.');
+                } else {
+                    $request->session()->flash('alert-warning', 'Some of the LDAP hosts that were provided were unable to be verified, they will not be saved.' . ' ' . implode(' - ', $errors));
+                }
+            }
+            // Store our final hosts in an array.
+            $pref->ldap_servers = implode(',', $save_hosts);
         } else {
             $pref->ldap_servers = null;
             $pref->ldap_port = null;
             $pref->ldap_search_base = null;
             $pref->ldap_domain = null;
-            $pref->ldap_bind_user_dn = null;
+            $pref->ldap_bind_user = null;
             $pref->ldap_bind_password = null;
             $pref->ldap_ssl = null;
         }
-
+        // This boolean for ldap cannot be null.
+        $pref->ldap_enabled = $managing_ldap;
         // Save the preferences
         $pref->save();
         // Return with a status message
