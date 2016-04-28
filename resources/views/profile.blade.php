@@ -19,6 +19,16 @@
                         <form class="form-horizontal" role="form" method="POST" action="{{ url('/profile') }}">
                             {!! csrf_field() !!}
 
+                            <div class="form-group">
+                                <label class="col-md-4 control-label">Gravatar</label>
+                                <div class="col-md-6">
+                                    <a target="_blank" href="https://www.gravatar.com/{{md5(strtolower(Auth::user()->email))}}"><img
+                                                src="{{ Gravatar::src(Auth::user()->email, 512)}}" width="128"></a>
+                                </div>
+                            </div>
+
+                            <br/>
+
                             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                                 <label class="col-md-4 control-label">Full Name</label>
 
