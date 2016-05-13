@@ -74,6 +74,8 @@ class VerificationController extends Controller
         // Create a new UUD client;
         $client = new UUDClient($prefs->uud_api_url, $prefs->uud_api_key);
 
+        dd($data);
+
         // Request user info based on username
         $user_result = $client->get_user_by_username($data['username']);
 
