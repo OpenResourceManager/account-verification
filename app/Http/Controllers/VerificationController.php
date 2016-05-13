@@ -71,6 +71,8 @@ class VerificationController extends Controller
         // Load our preferences
         $prefs = Preference::firstOrFail();
 
+        dd($prefs);
+
         // Create a new UUD client;
         $client = new UUDClient($prefs->uud_api_url, $prefs->uud_api_key);
 
