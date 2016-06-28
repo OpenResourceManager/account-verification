@@ -8,7 +8,8 @@
         "php": ">=5.5.9",
         "spatie/laravel-tail": "^1.1",
         "laravel/framework": "5.2.*",
-        "thomaswelton/laravel-gravatar": "^1.1"
+        "thomaswelton/laravel-gravatar": "^1.1",
+        "guzzlehttp/guzzle": "~5.3|~6.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
