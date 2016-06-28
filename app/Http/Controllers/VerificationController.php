@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\LDAPPasswordReset;
 use App\Preference;
-use App\UUD\Ldap;
 use App\VerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;

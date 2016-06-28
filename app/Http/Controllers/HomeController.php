@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\Preference;
 use App\User;
+use App\UUD\helpers\MailGun;
 use App\UUD\Ldap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
