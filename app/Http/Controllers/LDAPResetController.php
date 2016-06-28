@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Preference;
 use App\UUD\Client\UUDClient;
+use App\UUD\helpers\MailGun;
 use App\UUD\helpers\Security;
 use App\UUD\Ldap;
 use Carbon\Carbon;
@@ -116,7 +117,7 @@ class LDAPResetController extends Controller
             if (strval($email_domain) === strval(strtolower(trim($prefs->ldap_domain)))) {
                 // If so Redirect back with errors.
                 $kind = (empty($data['email'])) ? 'known_email_address' : 'email';
-                return redirect()->back()->withErrors([$kind => ['Provide an address from a domain other than: "' . $email_domain.'"']])->withInput($data);
+                return redirect()->back()->withErrors([$kind => ['Provide an address from a domain other than: "' . $email_domain . '"']])->withInput($data);
             }
 
             $name = $reset_request->name;
@@ -138,7 +139,11 @@ class LDAPResetController extends Controller
             // Mail the new password to the user
             Mail::send('mail.ldap_password_change', ['name' => $name, 'password' => $new_password, 'company_name' => $company_name, 'self_service_url' => $self_service_url], function ($m) use ($email, $name, $app_from, $company_name) {
                 $m->from($app_from, $company_name);
-                $m->to($email, $name)->subject('Password Reset');
+                $m->to($email, $name);
+                $m->subject('Password Reset');
+                if (env('MAILGUN_TAGS_ENABLE', false)) {
+                    $m->setHeaders(MailGun::generate_tags($m->getHeaders(), env('MAILGUN_TAGS', ''), array('ldap password reset')));
+                }
             });
 
             // Send new email back to the API

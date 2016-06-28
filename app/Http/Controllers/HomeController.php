@@ -88,6 +88,9 @@ class HomeController extends Controller
         Mail::send('auth.emails.password_change', ['user' => $user, 'token' => $token], function ($m) use ($user, $app_from, $app_name) {
             $m->from($app_from, $app_name);
             $m->to($user->email, $user->name)->subject('Password Change');
+            if (env('MAILGUN_TAGS_ENABLE', false)) {
+                $m->setHeaders(MailGun::generate_tags($m->getHeaders(), env('MAILGUN_TAGS', ''), array('local password reset')));
+            }
         });
         // Return with a status message
         $request->session()->flash('alert-warning', 'We\'ve sent you an email that contains a password reset link.' . "\n"
@@ -201,6 +204,9 @@ class HomeController extends Controller
         Mail::send('auth.emails.welcome', ['user' => $user, 'token' => $token], function ($m) use ($user, $app_name, $app_from) {
             $m->from($app_from, $app_name);
             $m->to($user->email, $user->name)->subject('Welcome!');
+            if (env('MAILGUN_TAGS_ENABLE', false)) {
+                $m->setHeaders(MailGun::generate_tags($m->getHeaders(), env('MAILGUN_TAGS', ''), array('welcome')));
+            }
         });
         // Return with a success message
         $request->session()->flash('alert-success', 'User was created!');
@@ -266,6 +272,9 @@ class HomeController extends Controller
         Mail::send('auth.emails.recovery', ['user' => $user, 'token' => $token], function ($m) use ($user, $app_from, $app_name) {
             $m->from($app_from, $app_name);
             $m->to($user->email, $user->name)->subject('Account Recovery');
+            if (env('MAILGUN_TAGS_ENABLE', false)) {
+                $m->setHeaders(MailGun::generate_tags($m->getHeaders(), env('MAILGUN_TAGS', ''), array('account recovery')));
+            }
         });
         // Return with a success message
         $request->session()->flash('alert-success', 'User was restored!');
