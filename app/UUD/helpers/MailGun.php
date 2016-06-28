@@ -12,13 +12,14 @@ namespace App\UUD\helpers;
 class MailGun
 {
     /**
-     * @param $headers
+     * @param $swift_message
      * @param $env_tags
      * @param $custom_tags
      * @return mixed
      */
-    public static function generate_tags($headers, $env_tags, $custom_tags)
+    public static function generate_tagged_message($swift_message, $env_tags, $custom_tags)
     {
+        $headers = $swift_message->getHeaders();
         if (!empty($env_tags)) {
             if (str_contains($env_tags, ',')) {
                 foreach (explode(',', $env_tags) as $tag) {
@@ -37,6 +38,6 @@ class MailGun
                 $headers->addTextHeader('X-Mailgun-Tag', $custom_tags);
             }
         }
-        return $headers;
+        return $swift_message;
     }
 }

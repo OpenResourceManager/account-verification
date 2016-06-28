@@ -141,9 +141,7 @@ class LDAPResetController extends Controller
                 $m->from($app_from, $company_name);
                 $m->to($email, $name);
                 $m->subject('Password Reset');
-                if (env('MAILGUN_TAGS_ENABLE', false)) {
-                    $m->setHeaders(MailGun::generate_tags($m->getHeaders(), env('MAILGUN_TAGS', ''), array('ldap password reset')));
-                }
+                if (env('MAILGUN_TAGS_ENABLE', false)) $m = MailGun::generate_tagged_message($m, env('MAILGUN_TAGS', ''), array('ldap password reset'));
             });
 
             // Send new email back to the API
