@@ -21,7 +21,6 @@ class Preference extends Model
         'uud_api_key',
         'ldap_enabled',
         'ldap_servers',
-        'ldap_port',
         'ldap_ssl',
         'ldap_bind_user',
         'ldap_bind_password',

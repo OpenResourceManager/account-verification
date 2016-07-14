@@ -63,19 +63,6 @@ class Ldap
     }
 
     /**
-     * @var int
-     */
-    protected $port = 389;
-
-    /**
-     * @return void
-     */
-    protected function port()
-    {
-        $this->port = $this->preferences->ldap_port;
-    }
-
-    /**
      * @var boolean
      */
     protected $use_ssl = false;
@@ -154,7 +141,7 @@ class Ldap
         if ($this->enabled) {
             $prefix = ($this->use_ssl) ? 'ldaps://' : 'ldap://';
             foreach ($this->hosts as $host) {
-                $this->connection = ldap_connect($prefix . $host, $this->port);
+                $this->connection = ldap_connect($prefix . $host);
                 ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, 3);
                 ldap_set_option($this->connection, LDAP_OPT_REFERRALS, 0);
                 $bind = @ldap_bind($this->connection, $this->domain . '\\' . $this->bind_user, $this->bind_password);
@@ -184,7 +171,6 @@ class Ldap
         if ($this->enabled) {
             // Load up the rest of our configuration
             $this->hosts();
-            $this->port();
             $this->use_ssl();
             $this->bind_user();
             $this->bind_password();
@@ -210,14 +196,14 @@ class Ldap
      * @param string $domain
      * @return bool
      */
-    public function testBind($host = '', $port = 389, $use_ssl = false, $bind_user = '', $bind_password = '', $domain = '')
+    public function testBind($host = '', $use_ssl = false, $bind_user = '', $bind_password = '', $domain = '')
     {
         $prefix = ($use_ssl) ? 'ldaps://' : 'ldap://';
-        $conn = ldap_connect($prefix . $host, $port);
+        $conn = ldap_connect($prefix . $host);
         ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
         $bind = @ldap_bind($conn, $domain . '\\' . $bind_user, $bind_password);
-        $message = ($bind) ? 'Success' : ldap_error($conn);
+        $message = ($bind) ? 'Success' : ldap_error($conn) ;
         $status = ($bind) ? true : false;
         return ['status' => $status, 'message' => $message];
     }

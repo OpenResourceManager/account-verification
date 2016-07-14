@@ -341,7 +341,6 @@ class HomeController extends Controller
         $managing_ldap = false;
         // If any of the ldap settings are filled out, require all of them
         if (!empty($data['ldap_servers']) ||
-            !empty($data['ldap_port']) ||
             !empty($data['ldap_search_base']) ||
             !empty($data['ldap_domain']) ||
             !empty($data['ldap_bind_user']) ||
@@ -349,7 +348,6 @@ class HomeController extends Controller
         ) {
             $managing_ldap = true;
             $rules['ldap_servers'] = 'required|max:255';
-            $rules['ldap_port'] = 'required|integer';
             $rules['ldap_search_base'] = 'required|max:255';
             $rules['ldap_domain'] = 'required|max:255';
             $rules['ldap_bind_user'] = 'required|max:255';
@@ -379,7 +377,6 @@ class HomeController extends Controller
             $hosts = $ldap->hosts2Array($data['ldap_servers']);
             $domain = $ldap->convertDomain($data['ldap_domain']);
             // Pass our input into the preferences object
-            $pref->ldap_port = $data['ldap_port'];
             $pref->ldap_search_base = $data['ldap_search_base'];
             $pref->ldap_domain = $data['ldap_domain'];
             $pref->ldap_bind_user = $data['ldap_bind_user'];
@@ -388,7 +385,7 @@ class HomeController extends Controller
             // Test each host and the credentials that were passed in from the input.
             $save_hosts = [];
             foreach ($hosts as $host) {
-                $bind = $ldap->testBind($host, $pref->ldap_port, $pref->ldap_ssl, $pref->ldap_bind_user, $pref->ldap_bind_password, $domain);
+                $bind = $ldap->testBind($host, $pref->ldap_ssl, $pref->ldap_bind_user, $pref->ldap_bind_password, $domain);
                 if ($bind['status']) {
                     $save_hosts[] = $host;
                 } else {
@@ -416,7 +413,6 @@ class HomeController extends Controller
             $pref->ldap_servers = implode(',', $save_hosts);
         } else {
             $pref->ldap_servers = null;
-            $pref->ldap_port = null;
             $pref->ldap_search_base = null;
             $pref->ldap_domain = null;
             $pref->ldap_bind_user = null;

@@ -51,12 +51,6 @@ if (empty(old('ldap_servers'))) {
     $ldap_servers = old('ldap_servers');
 }
 
-if (empty(old('ldap_port'))) {
-    $ldap_port = (empty($pref->ldap_port)) ? '' : $pref->ldap_port;
-} else {
-    $ldap_port = old('ldap_port');
-}
-
 if (empty(old('ldap_search_base'))) {
     $ldap_search_base = (empty($pref->ldap_search_base)) ? '' : $pref->ldap_search_base;
 } else {
@@ -217,21 +211,6 @@ if (isset($pref->ldap_ssl)) {
                                         @if ($errors->has('ldap_servers'))
                                             <span class="help-block">
                                         <strong>{{ $errors->first('ldap_servers') }}</strong>
-                                    </span>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <div class="form-group{{ $errors->has('ldap_port') ? ' has-error' : '' }}">
-                                    <label class="col-md-4 control-label">LDAP Port</label>
-
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control" name="ldap_port"
-                                               value="{{ $ldap_port }}" placeholder="389">
-
-                                        @if ($errors->has('ldap_port'))
-                                            <span class="help-block">
-                                        <strong>{{ $errors->first('ldap_port') }}</strong>
                                     </span>
                                         @endif
                                     </div>
