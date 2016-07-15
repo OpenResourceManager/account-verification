@@ -16,10 +16,6 @@ Route::get('/', function () {
     return redirect()->route('home');
 });
 
-Route::get('/info', function () {
-    phpinfo();
-});
-
 // Redirect to the main page
 Route::get('/home', function () {
     return redirect()->route('home');
