@@ -141,26 +141,15 @@ class Ldap
     private function connect()
     {
         if ($this->enabled) {
-            $bind_tries = 0;
             $prefix = ($this->use_ssl) ? 'ldaps://' : 'ldap://';
             $port = ($this->use_ssl) ? 636 : 389;
-            $bind = false;
             foreach ($this->hosts as $host) {
                 $this->connection = ldap_connect($prefix . $host, $port);
                 ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, 3);
                 ldap_set_option($this->connection, LDAP_OPT_REFERRALS, 0);
                 ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, 3000);
                 ldap_set_option($this->connection, LDAP_OPT_TIMELIMIT, 3000);
-                /**
-                 * @todo
-                 * The while loop below is a sloppy hack... fix it
-                 */
-                while ($bind_tries < $this->ldap_bind_rety_count) {
-                    $bind = @ldap_bind($this->connection, $this->domain . '\\' . $this->bind_user, $this->bind_password);
-                    if ($bind) break;
-                    sleep(1000);
-                    $bind_tries++;
-                }
+                $bind = @ldap_bind($this->connection, $this->domain . '\\' . $this->bind_user, $this->bind_password);
                 if ($bind) {
                     return $this->connection;
                 }
@@ -214,26 +203,14 @@ class Ldap
      */
     public function testBind($host = '', $use_ssl = false, $bind_user = '', $bind_password = '', $domain = '')
     {
-        $bind_tries = 0;
         $prefix = ($use_ssl) ? 'ldaps://' : 'ldap://';
         $port = ($this->use_ssl) ? 636 : 389;
         $conn = ldap_connect($prefix . $host, $port);
-        $bind = false;
         ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
         ldap_set_option($conn, LDAP_OPT_NETWORK_TIMEOUT, 3000);
         ldap_set_option($conn, LDAP_OPT_TIMELIMIT, 3000);
-        /**
-         * @todo
-         * The while loop below is a sloppy hack... fix it
-         */
-        while ($bind_tries < $this->ldap_bind_rety_count) {
-            $bind = @ldap_bind($conn, $domain . '\\' . $bind_user, $bind_password);
-            if ($bind) break;
-            sleep(1000);
-            $bind_tries++;
-        }
-
+        $bind = @ldap_bind($conn, $domain . '\\' . $bind_user, $bind_password);
         $message = ($bind) ? 'Success' : ldap_error($conn);
         $status = ($bind) ? true : false;
         return ['status' => $status, 'message' => $message];
