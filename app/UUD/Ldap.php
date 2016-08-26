@@ -140,8 +140,9 @@ class Ldap
     {
         if ($this->enabled) {
             $prefix = ($this->use_ssl) ? 'ldaps://' : 'ldap://';
+            $port = ($this->use_ssl) ? 636 : 389;
             foreach ($this->hosts as $host) {
-                $this->connection = ldap_connect($prefix . $host);
+                $this->connection = ldap_connect($prefix . $host, $port);
                 ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, 3);
                 ldap_set_option($this->connection, LDAP_OPT_REFERRALS, 0);
                 $bind = @ldap_bind($this->connection, $this->domain . '\\' . $this->bind_user, $this->bind_password);
@@ -194,12 +195,13 @@ class Ldap
      * @param string $bind_user
      * @param string $bind_password
      * @param string $domain
-     * @return bool
+     * @return array
      */
     public function testBind($host = '', $use_ssl = false, $bind_user = '', $bind_password = '', $domain = '')
     {
         $prefix = ($use_ssl) ? 'ldaps://' : 'ldap://';
-        $conn = ldap_connect($prefix . $host);
+        $port = ($this->use_ssl) ? 636 : 389;
+        $conn = ldap_connect($prefix . $host, $port);
         ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
         $bind = @ldap_bind($conn, $domain . '\\' . $bind_user, $bind_password);
