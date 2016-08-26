@@ -214,12 +214,13 @@ class Ldap
         ldap_set_option($conn, LDAP_OPT_TIMELIMIT, 3000);
 
         while ($bind_tries < $this->ldap_bind_rety_count) {
-
-            if ($bind) {
+            if (!$bind == false) {
                 break;
             } else {
                 $bind = @ldap_bind($conn, $domain . '\\' . $bind_user, $bind_password);
             }
+            sleep(1000);
+            $bind_tries ++;
         }
 
         $message = ($bind) ? 'Success' : ldap_error($conn);
