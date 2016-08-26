@@ -19,6 +19,7 @@ class CreatePreferencesTable extends Migration
             $table->string('application_email');
             $table->unsignedInteger('reset_session_timeout');
             $table->string('self_service_url')->nullable();
+            $table->string('company_logo_url')->nullable();
             $table->string('uud_api_url');
             $table->string('uud_api_key');
             $table->boolean('ldap_enabled')->default(false);

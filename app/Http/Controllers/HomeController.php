@@ -368,7 +368,7 @@ class HomeController extends Controller
         $pref->company_name = $data['company_name'];
         // Optional setting should be null when empty in form
         $pref->self_service_url = empty($data['self_service_url']) ? null : $data['self_service_url'];
-
+        $pref->company_logo_url = empty($data['company_logo_url']) ? null : $data['company_logo_url'];
         // Are we managing LDAP?
         if ($managing_ldap) {
             // Create a new Ldap object

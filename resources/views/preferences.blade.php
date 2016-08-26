@@ -21,6 +21,12 @@ if (empty(old('application_email_address'))) {
     $app_email = old('application_email_address');
 }
 
+if(empty(old('company_logo_url'))) {
+    $company_logo_url = (empty($pref)) ? '' : $pref->company_logo_url;
+} else {
+    $company_logo_url = old('company_logo_url');
+}
+
 if (empty(old('self_service_url'))) {
     $self_service_url = (empty($pref)) ? '' : $pref->self_service_url;
 } else {
@@ -293,6 +299,21 @@ if (isset($pref->ldap_ssl)) {
                                 <div class="center-div form-group">
                                     <h3><i class="fa fa-cubes"></i> Other Settings</h3>
                                     <p>Other optional settings</p>
+                                </div>
+                                <div class="form-group{{ $errors->has('company_logo_url') ? ' has-error' : '' }}">
+                                    <label class="col-md-4 control-label">Company Logo URL</label>
+
+                                    <div class="col-md-6">
+                                        <input type="url" class="form-control" name="company_logo_url"
+                                               value="{{ $company_logo_url }}"
+                                               placeholder="https://cdn.domain.tld/logo.png">
+
+                                        @if ($errors->has('company_logo_url'))
+                                            <span class="help-block">
+                                        <strong>{{ $errors->first('company_logo_url') }}</strong>
+                                    </span>
+                                        @endif
+                                    </div>
                                 </div>
                                 <div class="form-group{{ $errors->has('self_service_url') ? ' has-error' : '' }}">
                                     <label class="col-md-4 control-label">Self Service URL</label>

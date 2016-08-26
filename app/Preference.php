@@ -16,6 +16,7 @@ class Preference extends Model
         'application_name',
         'application_email',
         'self_service_url',
+        'company_logo_url',
         'reset_session_timeout',
         'uud_api_url',
         'uud_api_key',

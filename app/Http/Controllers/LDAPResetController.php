@@ -77,6 +77,7 @@ class LDAPResetController extends Controller
             $email = null;
             $post_email = false;
             $self_service_url = ($prefs->self_service_url && !empty($prefs->self_service_url) && isset($prefs->self_service_url)) ? $prefs->self_service_url : false;
+            $company_logo_url = ($prefs->company_logo_url && !empty($prefs->company_logo_url) && isset($prefs->company_logo_url)) ? $prefs->company_logo_url : false;
 
             foreach ($get_result['body']['result'] as $result) {
                 $known_emails[] = $result['email'];
@@ -137,7 +138,7 @@ class LDAPResetController extends Controller
             }
 
             // Mail the new password to the user
-            Mail::send('mail.ldap_password_change', ['name' => $name, 'password' => $new_password, 'company_name' => $company_name, 'self_service_url' => $self_service_url], function ($m) use ($email, $name, $app_from, $company_name) {
+            Mail::send('mail.ldap_password_change', ['name' => $name, 'password' => $new_password, 'company_name' => $company_name, 'self_service_url' => $self_service_url, 'company_logo_url' => $company_logo_url], function ($m) use ($email, $name, $app_from, $company_name) {
                 $m->from($app_from, $company_name);
                 $m->to($email, $name);
                 $m->subject('Password Reset');
