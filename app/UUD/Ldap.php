@@ -209,7 +209,7 @@ class Ldap
         $conn = ldap_connect($prefix . $host, $port);
         $bind = false;
         ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-        #ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
+        ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
         ldap_set_option($conn, LDAP_OPT_NETWORK_TIMEOUT, 3000);
         ldap_set_option($conn, LDAP_OPT_TIMELIMIT, 3000);
 
