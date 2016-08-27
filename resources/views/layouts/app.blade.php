@@ -1,20 +1,29 @@
 <?php
-$prefs = \App\Preference::all()->first();
-if (!empty($prefs)) {
-    $app_name = (isset($prefs->application_name)) ? $prefs->application_name : 'User Verification';
+
+$pref = (App\Preference::all()->count() > 0) ? App\Preference::all()->first() : null;
+
+if (!empty($pref->company_logo_url)) {
+    $company_logo_url = $pref->company_logo_url;
 } else {
-    $app_name = 'User Verification';
+    $company_logo_url = false;
 }
+
+if (!empty($pref->application_name)) {
+    $application_name = $pref->application_name;
+} else {
+    $application_name = 'User Account Verification';
+}
+
 ?>
 
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{$app_name}}</title>
+    <title>{{$application_name}}</title>
 
     <!-- Fonts -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.0/css/font-awesome.min.css" rel='stylesheet'
@@ -53,7 +62,9 @@ if (!empty($prefs)) {
 
             <!-- Branding Image -->
             <a class="navbar-brand" href="{{ url('/') }}">
-                <i class="fa fa-btn fa-check-circle"></i>{{$app_name}}
+
+                <i class="fa fa-btn fa-unlock-alt"></i>{{$application_name}}
+
             </a>
         </div>
 
@@ -61,7 +72,7 @@ if (!empty($prefs)) {
             <!-- Left Side Of Navbar -->
             <ul class="nav navbar-nav">
                 @if (!Auth::guest())
-                    <li><a href="{{ url('/') }}"><i class="fa fa-btn fa-unlock-alt"></i>Verify</a></li>
+                    <li><a href="{{ url('/') }}"><i class="fa fa-btn fa-check-circle"></i>Verify</a></li>
                     @if (Auth::user()->isAdmin)
                         {{--  <li><a href="{{ url('/dashboard') }}"><i class="fa fa-btn fa-dashboard"></i>Dashboard</a></li> --}}
                         <li><a href="{{ url('/timeline') }}"><i class="fa fa-btn fa-expand"></i>Recent Activity</a></li>
@@ -76,7 +87,7 @@ if (!empty($prefs)) {
             <ul class="nav navbar-nav navbar-right">
                 <!-- Authentication Links -->
                 @if (Auth::guest())
-                    <li><a href="{{ url('/login') }}">Login</a></li>
+                    <li><a href="{{ url('/login') }}"><i class="fa fa-btn fa-sign-in"></i>Login</a></li>
                 @else
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">

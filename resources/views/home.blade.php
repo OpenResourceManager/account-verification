@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="panel panel-default">
-                    <div class="panel-heading"><i class="fa fa-btn fa-unlock-alt"></i> User Verification</div>
+                    <div class="panel-heading"><i class="fa fa-btn fa-check-circle"></i> User Verification</div>
                     <div class="panel-body">
                         <form class="form-horizontal" role="form" method="POST" action="{{ url('/verify') }}">
                             {!! csrf_field() !!}
