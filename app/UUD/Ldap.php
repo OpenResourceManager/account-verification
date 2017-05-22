@@ -214,7 +214,6 @@ class Ldap
 
     /**
      * @param string $host
-     * @param int $port
      * @param bool $use_ssl
      * @param string $bind_user
      * @param string $bind_password
@@ -226,11 +225,13 @@ class Ldap
         $prefix = ($use_ssl) ? 'ldaps://' : 'ldap://';
         $port = ($this->use_ssl) ? 636 : 389;
         $conn = ldap_connect($prefix . $host, $port);
-        ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-        ldap_set_option($conn, LDAP_OPT_REFERRALS, 0);
-        ldap_set_option($conn, LDAP_OPT_NETWORK_TIMEOUT, 3000);
-        ldap_set_option($conn, LDAP_OPT_TIMELIMIT, 3000);
-        $bind = @ldap_bind($conn, $domain . '\\' . $bind_user, $bind_password);
+
+        //ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, 10);
+        //ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
+        ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, 3);
+        ldap_set_option($this->connection, LDAP_OPT_REFERRALS, 0);
+
+        $bind = $this->authenticate($conn, $domain, $bind_user, $bind_password);
         $message = ($bind) ? 'Success' : ldap_error($conn);
         $status = ($bind) ? true : false;
         return ['status' => $status, 'message' => $message];
