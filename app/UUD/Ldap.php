@@ -272,7 +272,7 @@ class Ldap
     */
     public function query_ldap($filter = '', $attributes = array('*'), $binary = false)
     {
-        if (!$this->connection) $this->connection = $this->connect();
+        $this->connection = $this->connect();
 
         if ($binary) {
             $search = ldap_search($this->connection, $this->search_base, $filter);
