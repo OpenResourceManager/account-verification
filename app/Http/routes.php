@@ -12,14 +12,11 @@
 */
 
 // Redirect to the main page
-Route::get('/', function () {
-    return redirect()->route('home');
-});
+Route::get('/', ['as' => 'index', 'uses' => 'HomeController@sendHome']);
 
 // Redirect to the main page
-Route::get('/home', function () {
-    return redirect()->route('home');
-});
+Route::get('/home', ['as' => 'go_home', 'uses' => 'HomeController@sendHome']);
+
 // Maintenance landing page
 Route::get('maintenance', ['as' => 'maintenance', 'uses' => 'HomeController@getMaintenance']);
 // Enable the auth routes (login, logout, ect..)
