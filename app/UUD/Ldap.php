@@ -136,7 +136,7 @@ class Ldap
     public $connection;
 
     /**
-     * @return resource
+     * @return bool|resource
      */
     private function connect()
     {
@@ -144,17 +144,37 @@ class Ldap
             $prefix = ($this->use_ssl) ? 'ldaps://' : 'ldap://';
             $port = ($this->use_ssl) ? 636 : 389;
             foreach ($this->hosts as $host) {
+                // Connect to the current host using the scheme and port specified
                 $this->connection = ldap_connect($prefix . $host, $port);
+                // Set ldap options
+                //ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, 10);
+                //ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
                 ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, 3);
                 ldap_set_option($this->connection, LDAP_OPT_REFERRALS, 0);
-                ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, 3000);
-                ldap_set_option($this->connection, LDAP_OPT_TIMELIMIT, 3000);
-                $bind = @ldap_bind($this->connection, $this->domain . '\\' . $this->bind_user, $this->bind_password);
-                if ($bind) {
+
+                // If the authenticate function returns true, break out of the foreach hosts loop and return the connection resource.
+                // Otherwise move onto the next host.
+                if ($this->authenticate($this->connection, $this->domain, $this->bind_user, $this->bind_password)) {
                     return $this->connection;
                 }
             }
+            return false;
         }
+    }
+
+    /**
+     * @param $connection
+     * @param $short_domain
+     * @param $bind_user
+     * @param $bind_password
+     * @return bool
+     */
+    private function authenticate($connection, $short_domain, $bind_user, $bind_password)
+    {
+        // Try to bind with the connection and credentials
+        $bind = @ldap_bind($connection, $short_domain . '\\' . $bind_user, $bind_password);
+        // Return a boolean based on the successes of the bind
+        return ($bind) ? true : false;
     }
 
     /**
