@@ -202,7 +202,7 @@ class Ldap
             $this->search_base();
             $this->domain();
             // Connect to LDAP
-            $this->connect();
+            $this->connection = $this->connect();
         }
     }
 
@@ -272,6 +272,8 @@ class Ldap
     */
     public function query_ldap($filter = '', $attributes = array('*'), $binary = false)
     {
+        if (!$this->connection) $this->connection = $this->connect();
+
         if ($binary) {
             $search = ldap_search($this->connection, $this->search_base, $filter);
             $entry = ldap_first_entry($this->connection, $search);
