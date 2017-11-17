@@ -7,6 +7,7 @@ use App\UUD\helpers\MailGun;
 use App\UUD\helpers\Security;
 use App\UUD\Ldap;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
@@ -201,7 +202,10 @@ class LDAPResetController extends Controller
 
             // Send new email back to the API
             if ($post_email && !empty($email)) {
-                $emailClient->store($api_user_id, null, null, $email, true, 'Account Verification', null, $app_from);
+                $response = $emailClient->store($api_user_id, null, null, $email, true, 'Account Verification', null, $app_from);
+                if ($response->code != 201) {
+                    Log::error($response->raw_body);
+                }
             }
 
             // Mark the request as done.
