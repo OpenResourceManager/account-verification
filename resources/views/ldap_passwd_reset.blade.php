@@ -39,8 +39,8 @@
                                                 name="known_email_address">
                                             <option value="">-- select or enter a new address --
                                             </option>
-                                            @foreach($emails as $email_rec)
-                                                <option value="{{$email_rec['email']}}">{{$email_rec['email']}}</option>
+                                            @foreach($emails as $email)
+                                                <option value="{{$email->address}}">{{$email->address}}</option>
                                             @endforeach
                                         </select>
 
@@ -56,7 +56,8 @@
                             @if(!empty($emails))
                                 <div class="center-div form-group">
                                     <h3>Option 2:</h3>
-                                    <p>If the user's external email is not in the known email list. Provide a new external email
+                                    <p>If the user's external email is not in the known email list. Provide a new
+                                        external email
                                         here.</p>
                                 </div>
                             @endif

@@ -10,8 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use App\UUD\Client\UUDClient;
 use Illuminate\Support\Str;
+use OpenResourceManager\ORM;
+use OpenResourceManager\Client\Account as AccountClient;
+use Exception;
 
 class VerificationController extends Controller
 {
@@ -69,63 +71,80 @@ class VerificationController extends Controller
 
         // Load our preferences
         $prefs = Preference::firstOrFail();
-
-        // Create a new UUD client;
-        $client = new UUDClient($prefs->uud_api_url, $prefs->uud_api_key);
-
-        // Request user info based on username
-        $user_result = $client->get_user_by_username($data['username']);
-
-        if (!$user_result['body']['success']) {
-            $request->session()->flash('alert-danger', 'We could not find that username in our records.');
-            $veriRequest->save();
-            return redirect()->route('verify_fail')->with('target', $target);
+        $key = $prefs->uud_api_key;
+        // Load the URL parts
+        // Not clean man @todo clean this crap up
+        $parts = parse_url($prefs->uud_api_url);
+        $version = 1;
+        foreach (explode('/', $parts['path']) as $slug) {
+            if (starts_with(strtolower($slug), 'v')) {
+                $v = substr($slug, -1);
+                if (is_int($v)) {
+                    $version = intval($v);
+                }
+            }
+        }
+        $useSSL = ($parts['scheme'] == 'https') ? true : false;
+        $host = $parts['host'];
+        if (isset($parts['port'])) {
+            $port = $parts['port'];
+        } else {
+            $port = $useSSL ? '443' : '80';
         }
 
-        // Request user info based on ID number
-        $user_result2 = $client->get_user_by_identifier($data['identifier']);
-        if (!$user_result2['body']['success']) {
+        // Build an orm connection
+        $orm = new ORM($key, $host, $version, $port, $useSSL);
+        //Create an Account Client
+        $accountClient = new AccountClient($orm);
+        // Request user info based on username
+        $responseFromUn = $accountClient->getFromIdentifier($data['identifier']);
+        $responseFromId = $accountClient->getFromIdentifier($data['identifier']);
+
+        // Verify that we got a good account from the ID
+        if ($responseFromId->code != 200) {
             $request->session()->flash('alert-danger', 'We could not find that ID number in our records.');
             $veriRequest->save();
             return redirect()->route('verify_fail')->with('target', $target);
         }
 
+        // Verify that we got a good account from the Username
+        if ($responseFromUn->code != 200) {
+            $request->session()->flash('alert-danger', 'We could not find that username in our records.');
+            $veriRequest->save();
+            return redirect()->route('verify_fail')->with('target', $target);
+        }
+
         // Verify that the user accounts returned from username and ID number are the same
-        if ($user_result['body']['result']['id'] != $user_result2['body']['result']['id']) {
+        if ($responseFromId->body->data->id != $responseFromUn->body->data->id) {
             $request->session()->flash('alert-danger', 'This user cannot be verified! There is a mismatch between the username and ID number.');
             $veriRequest->save();
             return redirect()->route('verify_fail')->with('target', $target);
         }
 
-        // Store the target user info so it can be passed onto the next view
-        $target = $user_result['body']['result'];
-        // Store the remote primary key, to make requests faster
-        $remote_id = $user_result['body']['result']['id'];
-        $target['api_user_id'] = $remote_id;
         // Store more info about the request, for audits and analytics
-        $veriRequest->returned_username = $user_result['body']['result']['username'];
-        $veriRequest->returned_identifier = $user_result2['body']['result']['identifier'];
-        $veriRequest->returned_user_id = $remote_id;
+        $veriRequest->returned_username = $responseFromId->body->data->username;
+        $veriRequest->returned_identifier = $responseFromId->body->data->identifier;
+        $veriRequest->returned_user_id = $responseFromId->body->data->id;
+        $veriRequest->returned_ssn = $responseFromId->body->data->ssn;
+        $veriRequest->returned_dob = $responseFromId->body->data->birth_date;
+        $veriRequest->save();
 
-        // Get the SSN by user's primary key
-        $ssn_result = $client->get_ssn_by_user($remote_id);
-        $remote_ssn = $ssn_result['body']['result'][0]['ssn'];
-        $veriRequest->returned_ssn = $remote_ssn;
+        // Store the target user info so it can be passed onto the next view
+        $target['name_first'] = $responseFromId->body->data->name_first;
+        $target['name_last'] = $responseFromId->body->data->name_last;
+
+        // Store the remote primary key, to make requests faster
+        $target['api_user_id'] = $responseFromId->body->data->id;
 
         // Verify the the remote SSN matches the SSN that was supplied
-        if (!$ssn_result['body']['success'] || intval($remote_ssn) != intval($data['ssn'])) {
+        if (strval($responseFromId->body->data->ssn) != strval($data['ssn'])) {
             $request->session()->flash('alert-danger', 'The social security number that was provided did not match our records.');
             $veriRequest->save();
             return redirect()->route('verify_fail')->with('target', $target);
         }
 
-        // Get the DOB by the user's primary key
-        $dob_result = $client->get_birth_date_by_user($remote_id);
-        $remote_dob = $dob_result['body']['result'][0]['birth_date'];
-        $veriRequest->returned_dob = $remote_dob;
-
         // Verify the the remote DOB matches the DOB that was supplied
-        if (!$dob_result['body']['success'] || $remote_dob != $data['dob']) {
+        if ($responseFromId->body->data->birth_date != $data['dob']) {
             $request->session()->flash('alert-danger', 'The date of birth that was provided did not match our records.');
             $veriRequest->save();
             return redirect()->route('verify_fail')->with('target', $target);
@@ -149,12 +168,13 @@ class VerificationController extends Controller
         $target = session('target');
 
         if ($prefs->ldap_enabled) {
+
             // Generate a unique random token
             do {
                 $token = Str::quickRandom(64);
                 $exists = LDAPPasswordReset::where('token', $token)->first();
             } while (!empty($exists));
-            
+
             // Generate a new password reset request
             LDAPPasswordReset::create([
                 'user_id' => Auth::user()->id,

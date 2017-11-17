@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Preference;
-use App\UUD\Client\UUDClient;
 use App\UUD\helpers\MailGun;
 use App\UUD\helpers\Security;
 use App\UUD\Ldap;
@@ -14,6 +13,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Validator;
 use App\LDAPPasswordReset;
+use OpenResourceManager\ORM;
+use OpenResourceManager\Client\Email as EmailClient;
 
 class LDAPResetController extends Controller
 {
@@ -34,24 +35,48 @@ class LDAPResetController extends Controller
         $created = strtotime($reset_request->created_at);
         $time_since_request = round(abs(strtotime(Carbon::now()) - $created) / 60);
         if ($time_since_request < $prefs->reset_session_timeout && $reset_request->pending) {
-            $api_user_id = $reset_request->api_user_id;
-            $client = new UUDClient($prefs->uud_api_url, $prefs->uud_api_key);
-            // Create a null email var
-            $emails = null;
-            // Get any emails from the API
-            $result = $client->get_emails_by_user($api_user_id);
-            // Was the request successful
-            if ($result['body']['success']) {
-                // Store the result in a var for convince
-                $emails = $result['body']['result'];
-                // Is the array empty?
-                if (empty($emails)) {
-                    // If so null
-                    $emails = null;
-                } else {
-                    $request->session()->flash('alert-success', 'This user has known external email addresses. You should ask the user if they would like to use a new address or one of the known ones.');
+
+            // Load the URL parts
+            // Not clean man @todo clean this crap up
+            $key = $prefs->uud_api_key;
+            $parts = parse_url($prefs->uud_api_url);
+            $version = 1;
+            foreach (explode('/', $parts['path']) as $slug) {
+                if (starts_with(strtolower($slug), 'v')) {
+                    $v = substr($slug, -1);
+                    if (is_int($v)) {
+                        $version = intval($v);
+                    }
                 }
             }
+            $useSSL = ($parts['scheme'] == 'https') ? true : false;
+            $host = $parts['host'];
+            if (isset($parts['port'])) {
+                $port = $parts['port'];
+            } else {
+                $port = $useSSL ? '443' : '80';
+            }
+
+            $api_user_id = $reset_request->api_user_id;
+            // Create a null email var
+
+            $orm = new ORM($key, $host, $version, $port, $useSSL);
+            $emailClient = new EmailClient($orm);
+            $response = $emailClient->getForAccount($api_user_id);
+
+            if ($response->code != 200) {
+                $request->session()->flash('alert-danger', 'Unable to communicate with remote API.');
+                return redirect()->route('home');
+            }
+
+            $emails = $response->body->data;
+
+            if (!empty($emails)) {
+                $request->session()->flash('alert-success', 'This user has known external email addresses. You should ask the user if they would like to use a new address or one of the known ones.');
+            } else {
+                $emails = null;
+            }
+
             // Show the view
             return view('ldap_passwd_reset', ['emails' => $emails, 'token' => $token]);
         } else {
@@ -71,16 +96,45 @@ class LDAPResetController extends Controller
         $created = strtotime($reset_request->created_at);
         $time_since_request = round(abs(strtotime(Carbon::now()) - $created) / 60);
         if ($time_since_request < $prefs->reset_session_timeout && $reset_request->pending) {
-            $client = new UUDClient($prefs->uud_api_url, $prefs->uud_api_key);
-            $get_result = $client->get_emails_by_user($api_user_id);
+
+            // Load the URL parts
+            // Not clean man @todo clean this crap up
+            $key = $prefs->uud_api_key;
+            $parts = parse_url($prefs->uud_api_url);
+            $version = 1;
+            foreach (explode('/', $parts['path']) as $slug) {
+                if (starts_with(strtolower($slug), 'v')) {
+                    $v = substr($slug, -1);
+                    if (is_int($v)) {
+                        $version = intval($v);
+                    }
+                }
+            }
+            $useSSL = ($parts['scheme'] == 'https') ? true : false;
+            $host = $parts['host'];
+            if (isset($parts['port'])) {
+                $port = $parts['port'];
+            } else {
+                $port = $useSSL ? '443' : '80';
+            }
+
+            $orm = new ORM($key, $host, $version, $port, $useSSL);
+            $emailClient = new EmailClient($orm);
+            $response = $emailClient->getForAccount($api_user_id);
+
+            if ($response->code != 200) {
+                $request->session()->flash('alert-danger', 'Unable to communicate with remote API.');
+                return redirect()->route('home');
+            }
+
             $known_emails = [];
             $email = null;
             $post_email = false;
             $self_service_url = ($prefs->self_service_url && !empty($prefs->self_service_url) && isset($prefs->self_service_url)) ? $prefs->self_service_url : false;
             $company_logo_url = ($prefs->company_logo_url && !empty($prefs->company_logo_url) && isset($prefs->company_logo_url)) ? $prefs->company_logo_url : false;
 
-            foreach ($get_result['body']['result'] as $result) {
-                $known_emails[] = $result['email'];
+            foreach ($response->body->data as $email) {
+                $known_emails[] = $email->address;
             }
 
             if (!empty($data['email'])) {
@@ -146,7 +200,9 @@ class LDAPResetController extends Controller
             });
 
             // Send new email back to the API
-            if ($post_email && !empty($email)) $client->post_email_by_user($reset_request->api_user_id, $email);
+            if ($post_email && !empty($email)) {
+                $emailClient->store($api_user_id, null, null, $email, true, 'Account Verification', null, $app_from);
+            }
 
             // Mark the request as done.
             $reset_request->pending = false;

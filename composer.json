@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "name": "open-resource-manager/account-verification",
+    "description": "ORM account verification and password reset utility.",
+    "keywords": ["ORM", "open resource manager", "account", "laravel"],
     "license": "MIT",
     "type": "project",
     "require": {
@@ -10,7 +10,8 @@
         "laravel/framework": "5.2.*",
         "thomaswelton/laravel-gravatar": "^1.1",
         "guzzlehttp/guzzle": "~5.3|~6.0",
-        "predis/predis": "~1.0"
+        "predis/predis": "~1.0",
+        "open-resource-manager/client-php": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

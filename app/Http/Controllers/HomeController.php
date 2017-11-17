@@ -338,7 +338,7 @@ class HomeController extends Controller
             'application_email_address' => 'required|email|max:255',
             'password_reset_session_timeout' => 'required|integer|max:60|min:1',
             'uud_api_url' => 'required|url',
-            'uud_api_key' => 'required|size:64',
+            'uud_api_key' => 'required|string',
         ];
 
         // If we are getting a self service url, then make sure it is valid
