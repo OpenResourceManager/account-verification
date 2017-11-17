@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f6e5f6adedba959d17521f4aee792677",
-    "content-hash": "7209d6dc2bcf2758c685ae68e51375c5",
+    "hash": "ec0d5ad2c7855fbc4c8a60fd971ef7c6",
+    "content-hash": "1c100daa8b767ea240366e1d51400c3c",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -974,16 +974,16 @@
         },
         {
             "name": "open-resource-manager/client-php",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/OpenResourceManager/client-php.git",
-                "reference": "3f127d1aa2261cc26df33c54aa8e0dc1bc542771"
+                "reference": "01d97c139445276378e59c9306802525d249eb5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/OpenResourceManager/client-php/zipball/3f127d1aa2261cc26df33c54aa8e0dc1bc542771",
-                "reference": "3f127d1aa2261cc26df33c54aa8e0dc1bc542771",
+                "url": "https://api.github.com/repos/OpenResourceManager/client-php/zipball/01d97c139445276378e59c9306802525d249eb5a",
+                "reference": "01d97c139445276378e59c9306802525d249eb5a",
                 "shasum": ""
             },
             "require": {
@@ -1016,7 +1016,7 @@
                 "open resource manager",
                 "orm"
             ],
-            "time": "2017-11-14 21:54:36"
+            "time": "2017-11-17 05:37:21"
         },
         {
             "name": "paragonie/random_compat",
