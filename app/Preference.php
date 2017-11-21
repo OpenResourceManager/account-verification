@@ -18,8 +18,6 @@ class Preference extends Model
         'self_service_url',
         'company_logo_url',
         'reset_session_timeout',
-        'uud_api_url',
-        'uud_api_key',
         'ldap_enabled',
         'ldap_servers',
         'ldap_ssl',

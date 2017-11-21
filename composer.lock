@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ec0d5ad2c7855fbc4c8a60fd971ef7c6",
-    "content-hash": "1c100daa8b767ea240366e1d51400c3c",
+    "hash": "9767814d21fb3a52b12d01385e011aa0",
+    "content-hash": "a015cb4558c60d05cee41c7b8be3d883",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -971,6 +971,61 @@
                 "php"
             ],
             "time": "2016-09-16 12:04:44"
+        },
+        {
+            "name": "open-resource-manager/client-laravel",
+            "version": "v0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/OpenResourceManager/client-laravel.git",
+                "reference": "ae0bd28356e2466436ffdee368a82e6fec2c789e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/OpenResourceManager/client-laravel/zipball/ae0bd28356e2466436ffdee368a82e6fec2c789e",
+                "reference": "ae0bd28356e2466436ffdee368a82e6fec2c789e",
+                "shasum": ""
+            },
+            "require": {
+                "open-resource-manager/client-php": "~1.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "OpenResourceManager\\Laravel\\ORMServiceProvider"
+                    ],
+                    "aliases": {
+                        "ORM": "OpenResourceManager\\Laravel\\Facade\\ORM"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "OpenResourceManager\\Laravel\\": "src/"
+                },
+                "files": [
+                    "src/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Markessinis",
+                    "email": "markea125@gmail.com"
+                }
+            ],
+            "description": "ORM client library with enhancements for Laravel",
+            "keywords": [
+                "client",
+                "larvel",
+                "open resource manager",
+                "orm"
+            ],
+            "time": "2017-11-21 21:01:53"
         },
         {
             "name": "open-resource-manager/client-php",

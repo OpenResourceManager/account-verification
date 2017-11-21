@@ -336,9 +336,7 @@ class HomeController extends Controller
             'company_name' => 'required|max:255',
             'application_name' => 'required|max:255',
             'application_email_address' => 'required|email|max:255',
-            'password_reset_session_timeout' => 'required|integer|max:60|min:1',
-            'uud_api_url' => 'required|url',
-            'uud_api_key' => 'required|string',
+            'password_reset_session_timeout' => 'required|integer|max:60|min:1'
         ];
 
         // If we are getting a self service url, then make sure it is valid
@@ -371,8 +369,6 @@ class HomeController extends Controller
         $pref->application_name = $data['application_name'];
         $pref->application_email = $data['application_email_address'];
         $pref->reset_session_timeout = $data['password_reset_session_timeout'];
-        $pref->uud_api_url = $data['uud_api_url'];
-        $pref->uud_api_key = $data['uud_api_key'];
         $pref->company_name = $data['company_name'];
         // Optional setting should be null when empty in form
         $pref->self_service_url = empty($data['self_service_url']) ? null : $data['self_service_url'];

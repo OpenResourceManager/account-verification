@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Validator;
 use App\LDAPPasswordReset;
-use OpenResourceManager\ORM;
 use OpenResourceManager\Client\Email as EmailClient;
 
 class LDAPResetController extends Controller
@@ -37,33 +36,9 @@ class LDAPResetController extends Controller
         $time_since_request = round(abs(strtotime(Carbon::now()) - $created) / 60);
         if ($time_since_request < $prefs->reset_session_timeout && $reset_request->pending) {
 
-            // Load the URL parts
-            // Not clean man @todo clean this crap up
-            $key = $prefs->uud_api_key;
-            $parts = parse_url($prefs->uud_api_url);
-            $version = 1;
-            foreach (explode('/', $parts['path']) as $slug) {
-                if (starts_with(strtolower($slug), 'v')) {
-                    $v = substr($slug, -1);
-                    if (is_int($v)) {
-                        $version = intval($v);
-                    }
-                }
-            }
-            $useSSL = ($parts['scheme'] == 'https') ? true : false;
-            $host = $parts['host'];
-            if (isset($parts['port'])) {
-                $port = $parts['port'];
-            } else {
-                $port = $useSSL ? '443' : '80';
-            }
-
-            $api_user_id = $reset_request->api_user_id;
-            // Create a null email var
-
-            $orm = new ORM($key, $host, $version, $port, $useSSL);
+            $orm = getORMConnection();
             $emailClient = new EmailClient($orm);
-            $response = $emailClient->getForAccount($api_user_id);
+            $response = $emailClient->getForAccount($reset_request->api_user_id);
 
             if ($response->code != 200) {
                 $request->session()->flash('alert-danger', 'Unable to communicate with remote API.');
@@ -98,28 +73,7 @@ class LDAPResetController extends Controller
         $time_since_request = round(abs(strtotime(Carbon::now()) - $created) / 60);
         if ($time_since_request < $prefs->reset_session_timeout && $reset_request->pending) {
 
-            // Load the URL parts
-            // Not clean man @todo clean this crap up
-            $key = $prefs->uud_api_key;
-            $parts = parse_url($prefs->uud_api_url);
-            $version = 1;
-            foreach (explode('/', $parts['path']) as $slug) {
-                if (starts_with(strtolower($slug), 'v')) {
-                    $v = substr($slug, -1);
-                    if (is_int($v)) {
-                        $version = intval($v);
-                    }
-                }
-            }
-            $useSSL = ($parts['scheme'] == 'https') ? true : false;
-            $host = $parts['host'];
-            if (isset($parts['port'])) {
-                $port = $parts['port'];
-            } else {
-                $port = $useSSL ? '443' : '80';
-            }
-
-            $orm = new ORM($key, $host, $version, $port, $useSSL);
+            $orm = getORMConnection();
             $emailClient = new EmailClient($orm);
             $response = $emailClient->getForAccount($api_user_id);
 

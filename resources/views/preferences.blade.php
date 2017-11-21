@@ -2,7 +2,7 @@
 
 <?php
 $pref = (App\Preference::all()->count() > 0) ? App\Preference::all()->first() : null;
-
+//@todo clean up this bullshit
 if (empty(old('company_name'))) {
     $company_name = (empty($pref)) ? '' : $pref->company_name;
 } else {
@@ -33,22 +33,10 @@ if (empty(old('self_service_url'))) {
     $self_service_url = old('self_service_url');
 }
 
-if (empty(old('uud_api_url'))) {
-    $api_url = (empty($pref)) ? '' : $pref->uud_api_url;
-} else {
-    $api_url = old('uud_api_url');
-}
-
 if (empty(old('password_reset_session_timeout'))) {
     $reset_session_to = (empty($pref)) ? '' : $pref->reset_session_timeout;
 } else {
     $reset_session_to = old('password_reset_session_timeout');
-}
-
-if (empty(old('uud_api_key'))) {
-    $api_key = (empty($pref)) ? '' : $pref->uud_api_key;
-} else {
-    $api_key = old('uud_api_key');
 }
 
 if (empty(old('ldap_servers'))) {
@@ -169,35 +157,6 @@ if (isset($pref->ldap_ssl)) {
                                     </div>
                                 </div>
 
-                                <div class="form-group{{ $errors->has('uud_api_url') ? ' has-error' : '' }}">
-                                    <label class="col-md-4 control-label">UUD API URL</label>
-
-                                    <div class="col-md-6">
-                                        <input type="url" class="form-control" name="uud_api_url"
-                                               value="{{ $api_url }}" placeholder="https://api-host.domain.tld/api/v1">
-
-                                        @if ($errors->has('uud_api_url'))
-                                            <span class="help-block">
-                                        <strong>{{ $errors->first('uud_api_url') }}</strong>
-                                    </span>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <div class="form-group{{ $errors->has('uud_api_key') ? ' has-error' : '' }}">
-                                    <label class="col-md-4 control-label">UUD API Key</label>
-
-                                    <div class="col-md-6">
-                                        <input type="password" class="form-control" name="uud_api_key"
-                                               value="{{ $api_key }}" placeholder="64 Character API Key">
-
-                                        @if ($errors->has('uud_api_key'))
-                                            <span class="help-block">
-                                        <strong>{{ $errors->first('uud_api_key') }}</strong>
-                                    </span>
-                                        @endif
-                                    </div>
-                                </div>
                             </div>
 
                             <div class="form-group">

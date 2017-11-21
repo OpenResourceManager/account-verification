@@ -160,7 +160,7 @@ return [
          * 3rd Party providers
          */
         Thomaswelton\LaravelGravatar\LaravelGravatarServiceProvider::class,
-
+        OpenResourceManager\Laravel\ORMServiceProvider::class,
     ],
 
     /*
@@ -207,7 +207,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Gravatar' => Thomaswelton\LaravelGravatar\Facades\Gravatar::class,
-
+        'ORM' => OpenResourceManager\Laravel\Facade\ORM::class,
     ],
 
 ];

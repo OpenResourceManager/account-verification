@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use OpenResourceManager\ORM;
 use OpenResourceManager\Client\Account as AccountClient;
 use Exception;
 
@@ -69,31 +68,8 @@ class VerificationController extends Controller
         $veriRequest->request_ssn = $data['ssn'];
         $veriRequest->request_dob = $data['dob'];
 
-        // Load our preferences
-        $prefs = Preference::firstOrFail();
-        $key = $prefs->uud_api_key;
-        // Load the URL parts
-        // Not clean man @todo clean this crap up
-        $parts = parse_url($prefs->uud_api_url);
-        $version = 1;
-        foreach (explode('/', $parts['path']) as $slug) {
-            if (starts_with(strtolower($slug), 'v')) {
-                $v = substr($slug, -1);
-                if (is_int($v)) {
-                    $version = intval($v);
-                }
-            }
-        }
-        $useSSL = ($parts['scheme'] == 'https') ? true : false;
-        $host = $parts['host'];
-        if (isset($parts['port'])) {
-            $port = $parts['port'];
-        } else {
-            $port = $useSSL ? '443' : '80';
-        }
-
         // Build an orm connection
-        $orm = new ORM($key, $host, $version, $port, $useSSL);
+        $orm = getORMConnection();
         //Create an Account Client
         $accountClient = new AccountClient($orm);
         // Request user info based on username
