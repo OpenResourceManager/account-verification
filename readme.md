@@ -1,4 +1,6 @@
-# UUD User Verification App
+# ORM Account Verification App
+
+Verify a user's account with identifying pieces of information for password resets.
 
 ## Installation:
 
