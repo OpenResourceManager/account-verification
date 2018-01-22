@@ -18,8 +18,11 @@
                                 <label class="col-md-4 control-label">Username</label>
 
                                 <div class="col-md-6">
+                                    <div class="input-group">
                                     <input type="text" class="form-control" name="username"
                                            value="{{ old('username') }}" placeholder="skywal">
+                                        <span class="input-group-addon"><i class="fa fa-unlock-alt"></i></span>
+                                    </div>
 
                                     @if ($errors->has('username'))
                                         <span class="help-block">
@@ -33,8 +36,11 @@
                                 <label class="col-md-4 control-label">ID Number</label>
 
                                 <div class="col-md-6">
+                                    <div class="input-group">
                                     <input type="text" class="form-control" name="identifier"
                                            value="{{ old('identifier') }}" placeholder="0170630">
+                                        <span class="input-group-addon"><i class="fa fa-id-card-o"></i></span>
+                                    </div>
 
                                     @if ($errors->has('identifier'))
                                         <span class="help-block">
