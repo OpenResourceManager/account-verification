@@ -11,7 +11,8 @@
         "thomaswelton/laravel-gravatar": "^1.1",
         "guzzlehttp/guzzle": "~5.3|~6.0",
         "predis/predis": "~1.0",
-        "open-resource-manager/client-laravel": "~0.1"
+        "open-resource-manager/client-laravel": "~0.1",
+        "doctrine/dbal": "^2.6"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

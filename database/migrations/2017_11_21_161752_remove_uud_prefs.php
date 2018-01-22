@@ -12,8 +12,11 @@ class RemoveUudPrefs extends Migration
      */
     public function up()
     {
-        Schema::table('preferences', function($table) {
+       Schema::table('preferences', function($table) {
             $table->dropColumn('uud_api_url');
+        });
+
+        Schema::table('preferences', function($table) {
             $table->dropColumn('uud_api_key');
         });
     }
@@ -25,9 +28,6 @@ class RemoveUudPrefs extends Migration
      */
     public function down()
     {
-        Schema::table('preferences', function($table) {
-            $table->string('uud_api_url');
-            $table->string('uud_api_key');
-        });
+
     }
 }

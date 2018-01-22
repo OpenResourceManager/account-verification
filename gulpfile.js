@@ -11,6 +11,11 @@ var elixir = require('laravel-elixir');
  |
  */
 
-elixir(function(mix) {
-    mix.sass('app.scss').version('public/css/app.css');
+elixir(function (mix) {
+    mix.sass('app.scss')
+        .version('public/css/app.css')
+        .scripts([
+            '../../../node_modules/jquery/dist/jquery.js',
+            '../../../node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js'
+        ], 'public/js/app.js');
 });

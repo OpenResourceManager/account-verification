@@ -1,6 +1,7 @@
-// @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+//@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 @import 'components/toggles';
 @import 'components/timeline';
+@import 'node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3';
 
 .center-div {
   text-align: center;

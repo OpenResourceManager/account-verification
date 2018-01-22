@@ -48,8 +48,21 @@
                                 <label class="col-md-4 control-label">Date of Birth</label>
 
                                 <div class="col-md-6">
-                                    <input type="text" class="form-control" name="dob"
-                                           value="{{ old('dob') }}" placeholder="1992-01-05 (yyyy-mm-dd)">
+
+                                    <div class="input-group">
+                                        @if(old('dob'))
+                                            <input name="dob" id="dob" class="form-control"
+                                                   placeholder="1992-01-05 (yyyy-mm-dd)"
+                                                   data-date-format="yyyy-mm-dd"
+                                                   data-provide="datepicker" value="{{old('dob')}}">
+                                        @else
+                                            <input name="dob" id="dob" class="form-control"
+                                                   placeholder="1992-01-05 (yyyy-mm-dd)"
+                                                   data-date-format="yyyy-mm-dd"
+                                                   data-provide="datepicker">
+                                        @endif
+                                        <span class="input-group-addon"><i class="fa fa-calendar-times-o"></i></span>
+                                    </div>
 
                                     @if ($errors->has('dob'))
                                         <span class="help-block">
@@ -72,4 +85,15 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('js_foot')
+    <script type="text/javascript">
+        var today = $('#today').val()
+        $('#dob').datepicker({
+            autoclose: true,
+            clearBtn: true,
+            startDate: today
+        })
+    </script>
 @endsection
