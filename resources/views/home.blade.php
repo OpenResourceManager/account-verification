@@ -61,7 +61,7 @@
                                                    data-date-format="yyyy-mm-dd"
                                                    data-provide="datepicker">
                                         @endif
-                                        <span class="input-group-addon"><i class="fa fa-calendar-times-o"></i></span>
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     </div>
 
                                     @if ($errors->has('dob'))
