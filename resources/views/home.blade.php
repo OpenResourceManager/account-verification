@@ -19,9 +19,10 @@
 
                                 <div class="col-md-6">
                                     <div class="input-group">
-                                    <input type="text" class="form-control" name="username"
-                                           value="{{ old('username') }}" placeholder="skywal">
-                                        <span class="input-group-addon"><i class="fa fa-unlock-alt"></i></span>
+                                        <input type="text" class="form-control" name="username"
+                                               value="{{ old('username') }}" placeholder="skywal">
+                                        <span class="input-group-addon"><i class="fa fa-unlock-alt"
+                                                                           aria-hidden="true"></i></span>
                                     </div>
 
                                     @if ($errors->has('username'))
@@ -37,9 +38,10 @@
 
                                 <div class="col-md-6">
                                     <div class="input-group">
-                                    <input type="text" class="form-control" name="identifier"
-                                           value="{{ old('identifier') }}" placeholder="0170630">
-                                        <span class="input-group-addon"><i class="fa fa-info"></i></span>
+                                        <input type="text" class="form-control" name="identifier"
+                                               value="{{ old('identifier') }}" placeholder="0170630">
+                                        <span class="input-group-addon"><i class="fa fa-id-card-o"
+                                                                           aria-hidden="true"></i></span>
                                     </div>
 
                                     @if ($errors->has('identifier'))
@@ -67,7 +69,8 @@
                                                    data-date-format="yyyy-mm-dd"
                                                    data-provide="datepicker">
                                         @endif
-                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <span class="input-group-addon"><i class="fa fa-calendar"
+                                                                           aria-hidden="true"></i></span>
                                     </div>
 
                                     @if ($errors->has('dob'))
