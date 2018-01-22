@@ -44,7 +44,6 @@ class VerificationController extends Controller
         $rules = [
             'username' => 'required|max:255',
             'identifier' => 'required|max:7|min:7',
-            'ssn' => 'required|max:4|min:4',
             'dob' => 'required|max:255',
         ];
 
@@ -65,7 +64,6 @@ class VerificationController extends Controller
         $veriRequest->verified = false; // False at this time
         $veriRequest->request_username = $data['username'];
         $veriRequest->request_identifier = $data['identifier'];
-        $veriRequest->request_ssn = $data['ssn'];
         $veriRequest->request_dob = $data['dob'];
 
         // Build an orm connection
@@ -101,7 +99,6 @@ class VerificationController extends Controller
         $veriRequest->returned_username = $responseFromId->body->data->username;
         $veriRequest->returned_identifier = $responseFromId->body->data->identifier;
         $veriRequest->returned_user_id = $responseFromId->body->data->id;
-        $veriRequest->returned_ssn = $responseFromId->body->data->ssn;
         $veriRequest->returned_dob = $responseFromId->body->data->birth_date;
         $veriRequest->save();
 
@@ -111,13 +108,6 @@ class VerificationController extends Controller
 
         // Store the remote primary key, to make requests faster
         $target['api_user_id'] = $responseFromId->body->data->id;
-
-        // Verify the the remote SSN matches the SSN that was supplied
-        if (strval($responseFromId->body->data->ssn) != strval($data['ssn'])) {
-            $request->session()->flash('alert-danger', 'The social security number that was provided did not match our records.');
-            $veriRequest->save();
-            return redirect()->route('verify_fail')->with('target', $target);
-        }
 
         // Verify the the remote DOB matches the DOB that was supplied
         if ($responseFromId->body->data->birth_date != $data['dob']) {

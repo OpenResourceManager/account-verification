@@ -44,21 +44,6 @@
                                 </div>
                             </div>
 
-                            <div class="form-group{{ $errors->has('ssn') ? ' has-error' : '' }}">
-                                <label class="col-md-4 control-label">Social Security Number</label>
-
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" name="ssn"
-                                           value="{{ old('ssn') }}" placeholder="1234 (last four digits)">
-
-                                    @if ($errors->has('ssn'))
-                                        <span class="help-block">
-                                        <strong>{{ $errors->first('ssn') }}</strong>
-                                    </span>
-                                    @endif
-                                </div>
-                            </div>
-
                             <div class="form-group{{ $errors->has('dob') ? ' has-error' : '' }}">
                                 <label class="col-md-4 control-label">Date of Birth</label>
 
