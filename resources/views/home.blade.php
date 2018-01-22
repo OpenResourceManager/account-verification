@@ -39,7 +39,7 @@
                                     <div class="input-group">
                                     <input type="text" class="form-control" name="identifier"
                                            value="{{ old('identifier') }}" placeholder="0170630">
-                                        <span class="input-group-addon"><i class="fa fa-id-card"></i></span>
+                                        <span class="input-group-addon"><i class="fa fa-info"></i></span>
                                     </div>
 
                                     @if ($errors->has('identifier'))
