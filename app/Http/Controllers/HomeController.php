@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests;
+use App\LDAPPasswordReset;
 use App\Preference;
 use App\User;
 use App\UUD\helpers\MailGun;
 use App\UUD\Ldap;
+use App\VerificationRequest;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -123,7 +126,19 @@ class HomeController extends Controller
      */
     public function timeline()
     {
-        return view('timeline');
+        $prefs = Preference::firstOrFail();
+        $verification_requets = VerificationRequest::orderBy('created_at', 'desc')->paginate(10);
+        $reset_requests = LDAPPasswordReset::orderBy('created_at', 'desc')->paginate(10);
+        $merged = Collection::make(array_merge($verification_requets->all(), $reset_requests->all()))->sortByDesc('created_at');
+
+        return view('timeline')->with([
+            'prefs' => $prefs,
+            'merged' => $merged,
+            'total' => $merged->count(),
+            'reset_requests' => $reset_requests,
+            'verification_requets' => $verification_requets,
+            'count' => 0
+        ]);
     }
 
     /**

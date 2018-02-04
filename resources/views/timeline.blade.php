@@ -1,13 +1,5 @@
 @extends('layouts.app')
 
-<?php
-$prefs = \App\Preference::firstOrFail();
-$verification_requets = \App\VerificationRequest::orderBy('created_at', 'desc')->take(10)->get()->all();
-$reset_requests = \App\LDAPPasswordReset::orderBy('created_at', 'desc')->take(10)->get()->all();
-$count = 0;
-$merged = \Illuminate\Database\Eloquent\Collection::make(array_merge($verification_requets, $reset_requests))->sortByDesc('created_at');
-$total = $merged->count();
-?>
 
 @section('content')
     <div class="container">
@@ -140,6 +132,14 @@ $total = $merged->count();
                         </div>
                         <br/>
                         <br/>
+                    </div>
+
+                    <div class="panel-footer center-div">
+                        @if($reset_requests->count() > 0)
+                            {{$reset_requests->links()}}
+                        @else
+                            {{$verification_requets->links()}}
+                        @endif
                     </div>
 
                 </div>
