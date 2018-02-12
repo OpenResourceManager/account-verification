@@ -16,7 +16,7 @@
                                 <ul class="timeline padded_timeline">
                                     @foreach($merged as $request)
                                         <?php
-                                        $tl_user = $request->user;
+                                        $tl_user = $request->user->withTrashed();
                                         $class = null;
                                         $expired = null;
                                         switch (strval(get_class($request))) {

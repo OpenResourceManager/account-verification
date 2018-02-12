@@ -35,6 +35,6 @@ class User extends Authenticatable
      */
     public function verification_requests()
     {
-        return $this->hasMany('\App\VerificationRequest');
+        return $this->hasMany(VerificationRequest::class);
     }
 }
